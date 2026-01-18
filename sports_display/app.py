@@ -151,11 +151,11 @@ class SportsDisplay:
                     time.sleep(10)
                     update = update_game(game)
                     if sport == 'nfl':
-                        self.draw_live_fb(update)
+                        self._draw_live_fb(update, False)
                     elif sport == 'nba' or sport == 'ncaabb':
-                        self.draw_live_bb(update)
+                        self._draw_live_bb(update, False)
                     else:
-                        self.draw_live_bb(update)  # fallback
+                        self._draw_live_bb(update, False)  # fallback
                     
             self.run()
 
@@ -166,20 +166,20 @@ class SportsDisplay:
                     self._draw_live_fb(game, True)
                     self.current_display = game
                 elif game['sport'] == 'nba' or game['sport'] == 'ncaabb':
-                    self.draw_live_bb(game, True)
+                    self._draw_live_bb(game, True)
                     self.current_display = game
                 else:
-                    self.draw_live_bb(game, True)  # fallback
+                    self._draw_live_bb(game, True)  # fallback
                     self.current_display = game
             for i in range(3):
                 time.sleep(10)
                 update = update_game(game)
                 if game['sport'] == 'nfl':
-                    self.draw_live_fb(update)
+                    self._draw_live_fb(update, False)
                 elif game['sport'] == 'nba' or game['sport'] == 'ncaabb':
-                    self.draw_live_bb(update)
+                    self._draw_live_bb(update, False)
                 else:
-                    self.draw_live_bb(update)  # fallback
+                    self._draw_live_bb(update, False)  # fallback
             self.run()
 
 
@@ -230,7 +230,7 @@ class SportsDisplay:
 
         self.current_display = game
 
-    def draw_live_fb(self, data, fetch_logos=True):
+    def _draw_live_fb(self, data, fetch_logos=True):
         font_small = graphics.Font()
         font_small.LoadFont(FONT_PATH+'5x8.bdf')
 
@@ -271,7 +271,7 @@ class SportsDisplay:
 
 
 
-    def draw_live_bb(self, data, fetch_logos=True):
+    def _draw_live_bb(self, data, fetch_logos=True):
         font_small = graphics.Font()
         font_small.LoadFont(FONT_PATH+'5x8.bdf')
 
@@ -300,22 +300,6 @@ class SportsDisplay:
         self.canvas.SetImage(self.away_logo, 0, 0)
         self.canvas.SetImage(self.home_logo, 96, 0)
         self.canvas = self.matrix.SwapOnVSync(self.canvas)
-
-    def draw_live_bb_game(self, game):
-        self._draw_live_bb(game, fetch_logos=True)
-        self.current_display = game
-
-
-    def update_live_bb_game(self, update):
-        try:
-            self.log(f"Updating BB game: {update.get('clock', 'N/A')} - {update['away_score']}-{update['home_score']}")
-            self._draw_live_bb(update, fetch_logos=False)
-            self.log("BB game update successful")
-        except Exception as e:
-            self.log(f"Error updating BB game: {e}")
-            import traceback
-            self.log(traceback.format_exc())
-
 
     def draw_postgame(self, game):
         font_small = graphics.Font()

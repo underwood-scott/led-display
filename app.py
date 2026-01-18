@@ -56,7 +56,7 @@ def start_sports_display():
     global display_process, display_type
     stop_display_process()
 
-    from sports-display.app import SportsDisplay
+    from sports_display.app import SportsDisplay
     display_process = Process(target=SportsDisplay(NFL_TEAMS, NCAAFB_TEAMS, NBA_TEAMS, NCAABB_TEAMS, MLB_TEAMS).run)
     display_process.start()
     display_type = "Sports Display"
@@ -71,7 +71,7 @@ def start_metro_display():
 
     MetroDisplay = None
     if MetroDisplay:
-        display_process = Process(target='metro-display/run.sh')
+        display_process = Process(target='metro_display/run.sh')
         display_process.start()
         display_type = "Metro Display"
     return redirect(url_for("index"))

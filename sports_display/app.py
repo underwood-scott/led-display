@@ -39,7 +39,7 @@ class SportsDisplay:
         self.current_display = None
         self.matrix = self.init_matrix()
         self.canvas = self.matrix.CreateFrameCanvas()
-        self.log("Initialized SportsDisplay instance.")
+        self.log(f"Initialized SportsDisplay instance. UID: {os.getuid()}")
 
 
     def run(self):
@@ -157,6 +157,8 @@ class SportsDisplay:
         options.rows = 32
         options.cols = 64
         options.chain_length = 4
+        options.parallel = 1
+        options.hardware_mapping = "adafruit-hat"
         options.pwm_bits = 3
         options.pwm_lsb_nanoseconds = 300
         options.gpio_slowdown = 2

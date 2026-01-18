@@ -50,13 +50,10 @@ def set_teams():
 
 def stop_display_process():
     global display_process, display_type
-    if display_process and display_process.poll() is None:
+    if display_process and display_process.is_alive():
         logger.info(f"Stopping display process. PID: {display_process.pid}")
         display_process.terminate()
-        try:
-            display_process.wait(timeout=2)
-        except subprocess.TimeoutExpired:
-            display_process.kill()
+        display_process.join(timeout=2)
         logger.info("Display process stopped.")
     else:
         logger.info("No active display process to stop.")

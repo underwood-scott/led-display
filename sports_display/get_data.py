@@ -26,8 +26,8 @@ def get_current_games(sport, teams, utc_offset):
                         'sport': sport,
                         'name': event['name']}
                 if sport == 'nfl' or sport == 'ncaafb':
-                    game['down'] = competition.get('situation', {}).get('shortDownDistanceText'),
-                    game['spot'] = competition.get('situation', {}).get('possessionText'),
+                    game['down'] = competition.get('situation', {}).get('shortDownDistanceText')
+                    game['spot'] = competition.get('situation', {}).get('possessionText')
                     game['possession'] = competition.get('situation', {}).get('possession')
                 # store the individual team info
                 for competitor in competition['competitors']:

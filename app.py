@@ -56,7 +56,7 @@ def start_sports_display():
     global display_process, display_type
     stop_display_process()
 
-    from sports_display.app import SportsDisplay
+    from sports-display.app import SportsDisplay
     display_process = Process(target=SportsDisplay(NFL_TEAMS, NCAAFB_TEAMS, NBA_TEAMS, NCAABB_TEAMS, MLB_TEAMS).run)
     display_process.start()
     display_type = "Sports Display"

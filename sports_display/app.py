@@ -246,20 +246,20 @@ class SportsDisplay:
         away_text_color = possession_color if data.get('possession') == data['away_team'] else text_color
         home_text_color = possession_color if data.get('possession') == data['home_team'] else text_color
 
-        graphics.DrawText(self.canvas, font_large, 34 if len(data['away_abbreviation']) == 3 else 39, 30, away_text_color, data['away_abbreviation'])
-        graphics.DrawText(self.canvas, font_large, 70 if len(data['home_abbreviation']) == 3 else 75, 30, home_text_color, data['home_abbreviation'])
-        graphics.DrawText(self.canvas, font_large, 60, 30, text_color, '@')
+        graphics.DrawText(self.canvas, font_large, 34 if len(data['away_abbreviation']) == 3 else 39, 24, away_text_color, data['away_abbreviation'])
+        graphics.DrawText(self.canvas, font_large, 70 if len(data['home_abbreviation']) == 3 else 75, 24, home_text_color, data['home_abbreviation'])
+        graphics.DrawText(self.canvas, font_large, 60, 24, text_color, '@')
 
         # write game score/time
-        graphics.DrawText(self.canvas, font_small, 64-(len(str(data.get('clock','')))*5-1)/2, 19, text_color, data.get('clock',''))
-        graphics.DrawText(self.canvas, font_large, 34 if int(data['away_score']) >= 100 else 39, 12, text_color, data['away_score'])
-        graphics.DrawText(self.canvas, font_large, 70 if int(data['home_score']) >= 100 else 75, 12, text_color, data['home_score'])
-        graphics.DrawText(self.canvas, font_small, 61, 12, text_color, str(data.get('period', 'Q?')))
+        graphics.DrawText(self.canvas, font_small, 64-(len(str(data.get('clock','')))*5-1)/2, 8, text_color, data.get('clock',''))
+        graphics.DrawText(self.canvas, font_large, 34 if int(data['away_score']) >= 100 else 39, 16, text_color, data['away_score'])
+        graphics.DrawText(self.canvas, font_large, 70 if int(data['home_score']) >= 100 else 75, 16, text_color, data['home_score'])
+        graphics.DrawText(self.canvas, font_small, 61, 16, text_color, 'Q'+str(data.get('period', '?')))
 
         # draw down and distance
         down_text = data.get('down', '')
         if down_text:
-            graphics.DrawText(self.canvas, font_small, 64 - (len(down_text) * 5 // 2), 32, text_color, down_text)
+            graphics.DrawText(self.canvas, font_small, 64 - (len(down_text) * 5 // 2), 0, text_color, down_text)
 
         if fetch_logos:
             self.away_logo = Image.open(BytesIO(requests.get(data['away_logo']).content)).resize((32,32),1).convert("RGB")
@@ -283,15 +283,15 @@ class SportsDisplay:
         # create team names
         text_color = graphics.Color(255, 255, 255)
 
-        graphics.DrawText(self.canvas, font_large, 34 if len(data['away_abbreviation']) == 3 else 39, 30, text_color, data['away_abbreviation'])
-        graphics.DrawText(self.canvas, font_large, 70 if len(data['home_abbreviation']) == 3 else 75, 30, text_color, data['home_abbreviation'])
-        graphics.DrawText(self.canvas, font_large, 60, 30, text_color, '@')
+        graphics.DrawText(self.canvas, font_large, 34 if len(data['away_abbreviation']) == 3 else 39, 24, text_color, data['away_abbreviation'])
+        graphics.DrawText(self.canvas, font_large, 70 if len(data['home_abbreviation']) == 3 else 75, 24, text_color, data['home_abbreviation'])
+        graphics.DrawText(self.canvas, font_large, 60, 24, text_color, '@')
 
         # write game score/time
-        graphics.DrawText(self.canvas, font_small, 64-(len(str(data['clock']))*5-1)/2, 19, text_color, data['clock'])
-        graphics.DrawText(self.canvas, font_large, 34 if int(data['away_score']) >= 100 else 39, 12, text_color, data['away_score'])
-        graphics.DrawText(self.canvas, font_large, 70 if int(data['home_score']) >= 100 else 75, 12, text_color, data['home_score'])
-        graphics.DrawText(self.canvas, font_small, 61, 12, text_color, str(data['period']))
+        graphics.DrawText(self.canvas, font_small, 64-(len(str(data['clock']))*5-1)/2, 8, text_color, data['clock'])
+        graphics.DrawText(self.canvas, font_large, 34 if int(data['away_score']) >= 100 else 39, 16, text_color, data['away_score'])
+        graphics.DrawText(self.canvas, font_large, 70 if int(data['home_score']) >= 100 else 75, 16, text_color, data['home_score'])
+        graphics.DrawText(self.canvas, font_small, 61, 16, text_color, str(data['period']))
 
         if fetch_logos:
             self.away_logo = Image.open(BytesIO(requests.get(data['away_logo']).content)).resize((32,32),1).convert("RGB")

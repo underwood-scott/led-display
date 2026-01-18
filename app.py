@@ -84,7 +84,7 @@ def start_metro_display():
     logger.info("Starting Metro Display process...")
     try:
         import subprocess
-        display_process = Process(target=subprocess.call, args=(['sudo', 'metro_display/run.sh'],))
+        display_process = Process(target=subprocess.call, args=(['sudo', './metro_display/run.sh'],))
         display_process.start()
         display_type = "Metro Display"
         logger.info(f"Metro Display process started. PID: {display_process.pid}, Alive: {display_process.is_alive()}")

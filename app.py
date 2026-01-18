@@ -28,6 +28,22 @@ TYPE_FILE = '/tmp/display_type.txt'
 
 @app.route("/", methods=["GET"])
 def index():
+    # Load teams from file for consistency across workers
+    try:
+        with open('sports_display/sports_teams.json', 'r') as f:
+            teams_data = json.load(f)
+        nfl_teams = teams_data.get('nfl', NFL_TEAMS)
+        nba_teams = teams_data.get('nba', NBA_TEAMS)
+        mlb_teams = teams_data.get('mlb', MLB_TEAMS)
+        ncaafb_teams = teams_data.get('ncaafb', NCAAFB_TEAMS)
+        ncaabb_teams = teams_data.get('ncaabb', NCAABB_TEAMS)
+    except (FileNotFoundError, json.JSONDecodeError):
+        nfl_teams = NFL_TEAMS
+        nba_teams = NBA_TEAMS
+        mlb_teams = MLB_TEAMS
+        ncaafb_teams = NCAAFB_TEAMS
+        ncaabb_teams = NCAABB_TEAMS
+
     if os.path.exists(TYPE_FILE):
         with open(TYPE_FILE, 'r') as f:
             current_type = f.read().strip()
@@ -36,11 +52,11 @@ def index():
     status = f"Current: {current_type}"
     return render_template(
         "index.html",
-        nfl_teams=", ".join(NFL_TEAMS),
-        nba_teams=", ".join(NBA_TEAMS),
-        mlb_teams=", ".join(MLB_TEAMS),
-        ncaafb_teams=", ".join(NCAAFB_TEAMS),
-        ncaabb_teams=", ".join(NCAABB_TEAMS),
+        nfl_teams=", ".join(nfl_teams),
+        nba_teams=", ".join(nba_teams),
+        mlb_teams=", ".join(mlb_teams),
+        ncaafb_teams=", ".join(ncaafb_teams),
+        ncaabb_teams=", ".join(ncaabb_teams),
         status=status
     )
 

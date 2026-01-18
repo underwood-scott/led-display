@@ -556,16 +556,12 @@ def main():
     sys.excepthook = exception_hook
     logger = logging.getLogger()
     logger.setLevel(logging.DEBUG)
-    #logging.basicConfig(filename='/home/pi/matrix-text-test/app.log',level=logging.DEBUG)
     handler = TimedRotatingFileHandler(sys.argv[1],
                                        when="d",
                                        interval=1,
                                        backupCount=5)
-    #sys_log_handler = SysLogHandler('/dev/log')
-
 
     logger.addHandler(handler)
-    #logger.addHandler(sys_log_handler)
 
     station_code_receiver, station_code_sender = Pipe()
     station_code_sender.send(sys.argv[3])

@@ -76,7 +76,7 @@ def start_sports_display():
         }
         with open('sports_display/sports_teams.json', 'w') as f:
             json.dump(teams_data, f)
-        display_process = Process(target=subprocess.call, args=(['sudo', 'python3', 'sports_display/app.py'],))
+        display_process = Process(target=subprocess.call, args=(['sudo', './sports_display/run.sh'],))
         display_process.start()
         display_type = "Sports Display"
         logger.info(f"Sports Display process started. PID: {display_process.pid}")

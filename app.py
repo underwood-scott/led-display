@@ -14,11 +14,11 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 # Default teams (can be changed via web)
-NFL_TEAMS = ['Green Bay Packers', 'Chicago Bears']
-NBA_TEAMS = ['Milwaukee Bucks', 'Los Angeles Lakers', 'Orlando Magic']
+NFL_TEAMS = ['Green Bay Packers']
+NBA_TEAMS = ['Milwaukee Bucks']
 NCAAFB_TEAMS = ['Wisconsin Badgers']
-NCAABB_TEAMS = ['Wisconsin Badgers', 'Marquette Golden Eagles']
-MLB_TEAMS = ['Milwaukee Brewers', 'Chicago Cubs']
+NCAABB_TEAMS = ['Wisconsin Badgers']
+MLB_TEAMS = ['Milwaukee Brewers']
 
 display_process = None
 display_type = None
@@ -91,7 +91,7 @@ def start_sports_display():
             'ncaabb': NCAABB_TEAMS,
             'mlb': MLB_TEAMS
         }
-        with open('sports_display/sports_teams.json', 'w') as f:
+        with open('/tmp/sports_teams.json', 'w') as f:
             json.dump(teams_data, f)
         display_process = subprocess.Popen(['sudo', './sports_display/run.sh'], preexec_fn=os.setsid)
         with open(PID_FILE, 'w') as f:

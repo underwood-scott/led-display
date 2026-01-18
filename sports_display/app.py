@@ -53,7 +53,7 @@ class SportsDisplay:
     def update_teams(self):
         # Load teams from temp file if available
         try:
-            with open('sports_display/sports_teams.json', 'r') as f:
+            with open('/tmp/sports_teams.json', 'r') as f:
                 teams_data = json.load(f)
             # Update globals
             nfl_teams = teams_data.get('nfl', NFL_TEAMS)

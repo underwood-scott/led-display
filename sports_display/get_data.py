@@ -62,15 +62,16 @@ def update_game(game):
     for event in response.json()['events']:
         if event['name'] == game['name']:
             competition = event['competitions'][0]
-            update = {'clock': event['status']['displayClock'],
-                    'period': event['status']['period']}
+            # Update the existing game dict with new values
+            game['clock'] = event['status']['displayClock']
+            game['period'] = event['status']['period']
             for competitor in competition['competitors']:
                 if competitor['homeAway'] == 'home':
-                    update['home_score'] = competitor['score']
+                    game['home_score'] = competitor['score']
                 else:
-                    update['away_score'] = competitor['score']
+                    game['away_score'] = competitor['score']
 
-    return update
+    return game
 
 
 if __name__ == '__main__':

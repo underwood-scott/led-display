@@ -249,36 +249,43 @@ class SportsDisplay:
 
 
     def update_live_fb_game(self, update):
-        font_small = graphics.Font()
-        font_small.LoadFont(FONT_PATH+'5x8.bdf')
+        try:
+            self.log(f"Updating FB game: {update.get('clock', 'N/A')} - {update['away_score']}-{update['home_score']}")
+            font_small = graphics.Font()
+            font_small.LoadFont(FONT_PATH+'5x8.bdf')
 
-        font_large = graphics.Font()
-        font_large.LoadFont(FONT_PATH+'8x13B.bdf')
-        text_color = graphics.Color(255, 255, 255)
+            font_large = graphics.Font()
+            font_large.LoadFont(FONT_PATH+'8x13B.bdf')
+            text_color = graphics.Color(255, 255, 255)
 
-        self.canvas.Clear()
+            self.canvas.Clear()
 
-        # Redraw team names
-        away_rgb = tuple(int(update['away_color'][i:i+2], 16) for i in (0, 2, 4))
-        away_color = graphics.Color(away_rgb[0], away_rgb[1], away_rgb[2])
-        home_rgb = tuple(int(update['home_color'][i:i+2], 16) for i in (0, 2, 4))
-        home_color = graphics.Color(home_rgb[0], home_rgb[1], home_rgb[2])
+            # Redraw team names
+            away_rgb = tuple(int(update['away_color'][i:i+2], 16) for i in (0, 2, 4))
+            away_color = graphics.Color(away_rgb[0], away_rgb[1], away_rgb[2])
+            home_rgb = tuple(int(update['home_color'][i:i+2], 16) for i in (0, 2, 4))
+            home_color = graphics.Color(home_rgb[0], home_rgb[1], home_rgb[2])
 
-        graphics.DrawText(self.canvas, font_large, 34 if len(update['away_abbreviation']) == 3 else 39, 30, text_color, update['away_abbreviation'])
-        graphics.DrawText(self.canvas, font_large, 70 if len(update['home_abbreviation']) == 3 else 75, 30, text_color, update['home_abbreviation'])
-        graphics.DrawText(self.canvas, font_large, 60, 30, text_color, '@')
+            graphics.DrawText(self.canvas, font_large, 34 if len(update['away_abbreviation']) == 3 else 39, 30, text_color, update['away_abbreviation'])
+            graphics.DrawText(self.canvas, font_large, 70 if len(update['home_abbreviation']) == 3 else 75, 30, text_color, update['home_abbreviation'])
+            graphics.DrawText(self.canvas, font_large, 60, 30, text_color, '@')
 
-        # write game score/time
-        graphics.DrawText(self.canvas, font_small, 64-(len(str(update.get('clock','')))*5-1)/2, 19, text_color, update.get('clock',''))
-        graphics.DrawText(self.canvas, font_large, 34 if int(update['away_score']) >= 100 else 39, 12, text_color, update['away_score'])
-        graphics.DrawText(self.canvas, font_large, 70 if int(update['home_score']) >= 100 else 75, 12, text_color, update['home_score'])
-        graphics.DrawText(self.canvas, font_small, 61, 12, text_color, str(update.get('quarter', 'Q?')))
+            # write game score/time
+            graphics.DrawText(self.canvas, font_small, 64-(len(str(update.get('clock','')))*5-1)/2, 19, text_color, update.get('clock',''))
+            graphics.DrawText(self.canvas, font_large, 34 if int(update['away_score']) >= 100 else 39, 12, text_color, update['away_score'])
+            graphics.DrawText(self.canvas, font_large, 70 if int(update['home_score']) >= 100 else 75, 12, text_color, update['home_score'])
+            graphics.DrawText(self.canvas, font_small, 61, 12, text_color, str(update.get('quarter', 'Q?')))
 
-        # Use cached logos
-        if hasattr(self, 'away_logo') and hasattr(self, 'home_logo'):
-            self.canvas.SetImage(self.away_logo, 0, 0)
-            self.canvas.SetImage(self.home_logo, 96, 0)
-        self.canvas = self.matrix.SwapOnVSync(self.canvas)
+            # Use cached logos
+            if hasattr(self, 'away_logo') and hasattr(self, 'home_logo'):
+                self.canvas.SetImage(self.away_logo, 0, 0)
+                self.canvas.SetImage(self.home_logo, 96, 0)
+            self.canvas = self.matrix.SwapOnVSync(self.canvas)
+            self.log("FB game update successful")
+        except Exception as e:
+            self.log(f"Error updating FB game: {e}")
+            import traceback
+            self.log(traceback.format_exc())
 
 
     def draw_live_bb_game(self, game):
@@ -318,36 +325,43 @@ class SportsDisplay:
 
 
     def update_live_bb_game(self, update):
-        font_small = graphics.Font()
-        font_small.LoadFont(FONT_PATH+'5x8.bdf')
+        try:
+            self.log(f"Updating BB game: {update.get('clock', 'N/A')} - {update['away_score']}-{update['home_score']}")
+            font_small = graphics.Font()
+            font_small.LoadFont(FONT_PATH+'5x8.bdf')
 
-        font_large = graphics.Font()
-        font_large.LoadFont(FONT_PATH+'8x13B.bdf')
-        text_color = graphics.Color(255, 255, 255)
+            font_large = graphics.Font()
+            font_large.LoadFont(FONT_PATH+'8x13B.bdf')
+            text_color = graphics.Color(255, 255, 255)
 
-        self.canvas.Clear()
+            self.canvas.Clear()
 
-        # Redraw team names (they don't change, but to be safe)
-        away_rgb = tuple(int(update['away_color'][i:i+2], 16) for i in (0, 2, 4))
-        away_color = graphics.Color(away_rgb[0], away_rgb[1], away_rgb[2])
-        home_rgb = tuple(int(update['home_color'][i:i+2], 16) for i in (0, 2, 4))
-        home_color = graphics.Color(home_rgb[0], home_rgb[1], home_rgb[2])
+            # Redraw team names (they don't change, but to be safe)
+            away_rgb = tuple(int(update['away_color'][i:i+2], 16) for i in (0, 2, 4))
+            away_color = graphics.Color(away_rgb[0], away_rgb[1], away_rgb[2])
+            home_rgb = tuple(int(update['home_color'][i:i+2], 16) for i in (0, 2, 4))
+            home_color = graphics.Color(home_rgb[0], home_rgb[1], home_rgb[2])
 
-        graphics.DrawText(self.canvas, font_large, 34 if len(update['away_abbreviation']) == 3 else 39, 30, text_color, update['away_abbreviation'])
-        graphics.DrawText(self.canvas, font_large, 70 if len(update['home_abbreviation']) == 3 else 75, 30, text_color, update['home_abbreviation'])
-        graphics.DrawText(self.canvas, font_large, 60, 30, text_color, '@')
+            graphics.DrawText(self.canvas, font_large, 34 if len(update['away_abbreviation']) == 3 else 39, 30, text_color, update['away_abbreviation'])
+            graphics.DrawText(self.canvas, font_large, 70 if len(update['home_abbreviation']) == 3 else 75, 30, text_color, update['home_abbreviation'])
+            graphics.DrawText(self.canvas, font_large, 60, 30, text_color, '@')
 
-        # write game score/time
-        graphics.DrawText(self.canvas, font_small, 64-(len(str(update['clock']))*5-1)/2, 19, text_color, update['clock'])
-        graphics.DrawText(self.canvas, font_large, 34 if int(update['away_score']) >= 100 else 39, 12, text_color, update['away_score'])
-        graphics.DrawText(self.canvas, font_large, 70 if int(update['home_score']) >= 100 else 75, 12, text_color, update['home_score'])
-        graphics.DrawText(self.canvas, font_small, 61, 12, text_color, str(update['period']))
+            # write game score/time
+            graphics.DrawText(self.canvas, font_small, 64-(len(str(update['clock']))*5-1)/2, 19, text_color, update['clock'])
+            graphics.DrawText(self.canvas, font_large, 34 if int(update['away_score']) >= 100 else 39, 12, text_color, update['away_score'])
+            graphics.DrawText(self.canvas, font_large, 70 if int(update['home_score']) >= 100 else 75, 12, text_color, update['home_score'])
+            graphics.DrawText(self.canvas, font_small, 61, 12, text_color, str(update['period']))
 
-        # Use cached logos
-        if hasattr(self, 'away_logo') and hasattr(self, 'home_logo'):
-            self.canvas.SetImage(self.away_logo, 0, 0)
-            self.canvas.SetImage(self.home_logo, 96, 0)
-        self.canvas = self.matrix.SwapOnVSync(self.canvas)
+            # Use cached logos
+            if hasattr(self, 'away_logo') and hasattr(self, 'home_logo'):
+                self.canvas.SetImage(self.away_logo, 0, 0)
+                self.canvas.SetImage(self.home_logo, 96, 0)
+            self.canvas = self.matrix.SwapOnVSync(self.canvas)
+            self.log("BB game update successful")
+        except Exception as e:
+            self.log(f"Error updating BB game: {e}")
+            import traceback
+            self.log(traceback.format_exc())
 
 
     def draw_postgame(self, game):

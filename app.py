@@ -4,6 +4,7 @@ from multiprocessing import Process
 import os
 import signal
 import logging
+import subprocess
 
 app = Flask(__name__)
 
@@ -69,9 +70,8 @@ def start_sports_display():
     stop_display_process()
     logger.info("Starting Sports Display process...")
     try:
-        import subprocess
-        code = f'from sports_display.app import SportsDisplay; d = SportsDisplay({NFL_TEAMS!r}, {NCAAFB_TEAMS!r}, {NBA_TEAMS!r}, {NCAABB_TEAMS!r}, {MLB_TEAMS!r}); d.run()'
-        display_process = subprocess.Popen(['sudo', 'python3', '-c', code])
+        display_process = Process(target=subprocess.call, args=(['sudo', 'python3', 'sports-display/app.py'],))
+        display_process.start()
         display_type = "Sports Display"
         logger.info(f"Sports Display process started. PID: {display_process.pid}")
     except Exception as e:
@@ -86,7 +86,6 @@ def start_metro_display():
     stop_display_process()
     logger.info("Starting Metro Display process...")
     try:
-        import subprocess
         display_process = Process(target=subprocess.call, args=(['sudo', './metro_display/run.sh'],))
         display_process.start()
         display_type = "Metro Display"

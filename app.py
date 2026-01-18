@@ -69,11 +69,10 @@ def start_metro_display():
     stop_display_process()
     # Try to import MetroDisplay if available
 
-    MetroDisplay = None
-    if MetroDisplay:
-        display_process = Process(target='metro_display/run.sh')
-        display_process.start()
-        display_type = "Metro Display"
+    import subprocess
+    display_process = Process(target=subprocess.call, args=(['sudo', 'metro_display/run.sh'],))
+    display_process.start()
+    display_type = "Metro Display"
     return redirect(url_for("index"))
 
 

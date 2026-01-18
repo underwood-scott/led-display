@@ -1,5 +1,5 @@
 from flask import Flask, render_template
-from get_data import get_current_games, update_game
+from sports_display.get_data import get_current_games, update_game
 from io import BytesIO
 from multiprocessing import Process
 from PIL import Image

@@ -70,7 +70,7 @@ def start_sports_display():
     stop_display_process()
     logger.info("Starting Sports Display process...")
     try:
-        display_process = Process(target=subprocess.call, args=(['sudo', 'python3', 'sports-display/app.py'],))
+        display_process = Process(target=subprocess.call, args=(['sudo', 'python3', 'sports_display/app.py'],))
         display_process.start()
         display_type = "Sports Display"
         logger.info(f"Sports Display process started. PID: {display_process.pid}")

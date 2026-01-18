@@ -1,0 +1,15 @@
+[Unit]
+Description=Fantasy LED Display App
+After=network.target
+
+[Service]
+User=sunderwood  # Replace with your username (must have sudo access for subprocesses)
+WorkingDirectory=/Users/sunderwood/led-display
+ExecStart=/usr/bin/gunicorn --bind 0.0.0.0:5000 app:app
+Restart=always
+RestartSec=5
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=multi-user.target

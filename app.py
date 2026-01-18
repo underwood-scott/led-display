@@ -14,11 +14,15 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 # Default teams (can be changed via web)
-NFL_TEAMS = ['Green Bay Packers']
-NBA_TEAMS = ['Milwaukee Bucks']
-NCAAFB_TEAMS = ['Wisconsin Badgers']
-NCAABB_TEAMS = ['Wisconsin Badgers']
-MLB_TEAMS = ['Milwaukee Brewers']
+DEFAULT_TEAMS = {
+    'nfl': ['Green Bay Packers'],
+    'nba': ['Milwaukee Bucks'],
+    'ncaafb': ['Wisconsin Badgers'],
+    'ncaabb': ['Wisconsin Badgers'],
+    'mlb': ['Milwaukee Brewers']
+}
+
+TEAMS_FILE = '/tmp/sports_teams.json'
 
 display_process = None
 display_type = None
@@ -28,22 +32,15 @@ TYPE_FILE = '/tmp/display_type.txt'
 
 @app.route("/", methods=["GET"])
 def index():
-    # Load teams from file for consistency across workers
-    try:
-        with open('sports_display/sports_teams.json', 'r') as f:
-            teams_data = json.load(f)
-        nfl_teams = teams_data.get('nfl', NFL_TEAMS)
-        nba_teams = teams_data.get('nba', NBA_TEAMS)
-        mlb_teams = teams_data.get('mlb', MLB_TEAMS)
-        ncaafb_teams = teams_data.get('ncaafb', NCAAFB_TEAMS)
-        ncaabb_teams = teams_data.get('ncaabb', NCAABB_TEAMS)
-    except (FileNotFoundError, json.JSONDecodeError):
-        nfl_teams = NFL_TEAMS
-        nba_teams = NBA_TEAMS
-        mlb_teams = MLB_TEAMS
-        ncaafb_teams = NCAAFB_TEAMS
-        ncaabb_teams = NCAABB_TEAMS
-
+    # Ensure teams file exists with defaults
+    if not os.path.exists(TEAMS_FILE):
+        with open(TEAMS_FILE, 'w') as f:
+            json.dump(DEFAULT_TEAMS, f)
+    
+    # Load teams from file
+    with open(TEAMS_FILE, 'r') as f:
+        teams_data = json.load(f)
+    
     if os.path.exists(TYPE_FILE):
         with open(TYPE_FILE, 'r') as f:
             current_type = f.read().strip()
@@ -52,33 +49,26 @@ def index():
     status = f"Current: {current_type}"
     return render_template(
         "index.html",
-        nfl_teams=", ".join(nfl_teams),
-        nba_teams=", ".join(nba_teams),
-        mlb_teams=", ".join(mlb_teams),
-        ncaafb_teams=", ".join(ncaafb_teams),
-        ncaabb_teams=", ".join(ncaabb_teams),
+        nfl_teams=", ".join(teams_data['nfl']),
+        nba_teams=", ".join(teams_data['nba']),
+        mlb_teams=", ".join(teams_data['mlb']),
+        ncaafb_teams=", ".join(teams_data['ncaafb']),
+        ncaabb_teams=", ".join(teams_data['ncaabb']),
         status=status
     )
 
 
 @app.route("/set_teams", methods=["POST"])
 def set_teams():
-    nfl_teams = [t.strip() for t in request.form.get("nfl", "").split(",") if t.strip()]
-    nba_teams = [t.strip() for t in request.form.get("nba", "").split(",") if t.strip()]
-    mlb_teams = [t.strip() for t in request.form.get("mlb", "").split(",") if t.strip()]
-    ncaafb_teams = [t.strip() for t in request.form.get("ncaafb", "").split(",") if t.strip()]
-    ncaabb_teams = [t.strip() for t in request.form.get("ncaabb", "").split(",") if t.strip()]
-    # write updated teams to a temp file for the subprocess to read
     teams_data = {
-        'nfl': nfl_teams,
-        'nba': nba_teams,
-        'ncaafb': ncaafb_teams,
-        'ncaabb': ncaabb_teams,
-        'mlb': mlb_teams
+        'nfl': [t.strip() for t in request.form.get("nfl", "").split(",") if t.strip()],
+        'nba': [t.strip() for t in request.form.get("nba", "").split(",") if t.strip()],
+        'mlb': [t.strip() for t in request.form.get("mlb", "").split(",") if t.strip()],
+        'ncaafb': [t.strip() for t in request.form.get("ncaafb", "").split(",") if t.strip()],
+        'ncaabb': [t.strip() for t in request.form.get("ncaabb", "").split(",") if t.strip()]
     }
-    with open('/tmp/sports_teams.json', 'w') as f:
+    with open(TEAMS_FILE, 'w') as f:
         json.dump(teams_data, f)
-
     return redirect(url_for("index"))
 
 
@@ -109,16 +99,6 @@ def start_sports_display():
     stop_display_process()
     logger.info("Starting Sports Display process...")
     try:
-        # Write teams to a temp file for the subprocess to read
-        teams_data = {
-            'nfl': NFL_TEAMS,
-            'nba': NBA_TEAMS,
-            'ncaafb': NCAAFB_TEAMS,
-            'ncaabb': NCAABB_TEAMS,
-            'mlb': MLB_TEAMS
-        }
-        with open('/tmp/sports_teams.json', 'w') as f:
-            json.dump(teams_data, f)
         display_process = subprocess.Popen(['sudo', './sports_display/run.sh'], preexec_fn=os.setsid)
         with open(PID_FILE, 'w') as f:
             f.write(str(display_process.pid))

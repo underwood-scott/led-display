@@ -76,11 +76,11 @@ def update_game(game):
 
 if __name__ == '__main__':
     UTC_OFFSET = -5
-    NFL_TEAMS = ['Green Bay Packers', 'Washington Commanders']
-    NBA_TEAMS = ['Milwaukee Bucks', 'Cleveland Cavaliers']
+    NFL_TEAMS = ['Green Bay Packers']
+    NBA_TEAMS = ['Milwaukee Bucks']
     NCAAFB_TEAMS = ['Wisconsin Badgers']
-    NCAABB_TEAMS = ['Wisconsin Badgers', 'Marquette Golden Eagles']
-    MLB_TEAMS = ['Milwaukee Brewers', 'Chicago Cubs']
+    NCAABB_TEAMS = ['Wisconsin Badgers']
+    MLB_TEAMS = ['Milwaukee Brewers']
 
 
     nfl_games = get_current_games('nfl', NFL_TEAMS, UTC_OFFSET)

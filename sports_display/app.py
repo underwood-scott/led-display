@@ -16,11 +16,6 @@ import json
 
 
 UTC_OFFSET = -5
-NFL_TEAMS = ['Green Bay Packers', 'Chicago Bears']
-NBA_TEAMS = ['Milwaukee Bucks', 'Los Angeles Lakers', 'Orlando Magic']
-NCAAFB_TEAMS = ['Wisconsin Badgers']
-NCAABB_TEAMS = ['Wisconsin Badgers', 'Marquette Golden Eagles']
-MLB_TEAMS = ['Milwaukee Brewers', 'Chicago Cubs']
 
 FONT_PATH = '/home/sunderwood/led-display/rpi-rgb-led-matrix/fonts/'
 
@@ -51,25 +46,24 @@ class SportsDisplay:
 
     
     def update_teams(self):
-        # Load teams from temp file if available
+        # Load teams from file
         try:
             with open('/tmp/sports_teams.json', 'r') as f:
                 teams_data = json.load(f)
-            # Update globals
-            nfl_teams = teams_data.get('nfl', NFL_TEAMS)
-            nba_teams = teams_data.get('nba', NBA_TEAMS)
-            ncaafb_teams = teams_data.get('ncaafb', NCAAFB_TEAMS)
-            ncaabb_teams = teams_data.get('ncaabb', NCAABB_TEAMS)
-            mlb_teams = teams_data.get('mlb', MLB_TEAMS)
-            # Update instance teams
-            self.teams = {'nfl': nfl_teams,
-                          'ncaafb': ncaafb_teams,
-                          'nba': nba_teams,
-                          'ncaabb': ncaabb_teams,
-                          'mlb': mlb_teams}
-            self.log("Teams updated from file.")
+            self.teams = {'nfl': teams_data['nfl'],
+                          'ncaafb': teams_data['ncaafb'],
+                          'nba': teams_data['nba'],
+                          'ncaabb': teams_data['ncaabb'],
+                          'mlb': teams_data['mlb']}
+            self.log("Teams loaded from file.")
         except (FileNotFoundError, json.JSONDecodeError):
-            self.log("No team updates found; using defaults.")
+            self.log("Teams file not found; using defaults.")
+            # Fallback to defaults if file missing
+            self.teams = {'nfl': ['Green Bay Packers'],
+                          'ncaafb': ['Wisconsin Badgers'],
+                          'nba': ['Milwaukee Bucks'],
+                          'ncaabb': ['Wisconsin Badgers'],
+                          'mlb': ['Milwaukee Brewers']}
 
 
     def find_games(self):
@@ -415,5 +409,13 @@ class SportsDisplay:
 if __name__ == "__main__":
     logging.basicConfig(level=logging.INFO)
 
-    display = SportsDisplay(NFL_TEAMS, NCAAFB_TEAMS, NBA_TEAMS, NCAABB_TEAMS, MLB_TEAMS)
+    # Use defaults for standalone run
+    default_teams = {
+        'nfl': ['Green Bay Packers'],
+        'ncaafb': ['Wisconsin Badgers'],
+        'nba': ['Milwaukee Bucks'],
+        'ncaabb': ['Wisconsin Badgers'],
+        'mlb': ['Milwaukee Brewers']
+    }
+    display = SportsDisplay(default_teams['nfl'], default_teams['ncaafb'], default_teams['nba'], default_teams['ncaabb'], default_teams['mlb'])
     display.run()

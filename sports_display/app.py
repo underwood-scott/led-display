@@ -131,42 +131,55 @@ class SportsDisplay:
 
     def run_display_live(self):
         self.log("Displaying: Live games.")
+        # Reset current_display to ensure live display always draws initially to cache logos
+        self.current_display = None
         # cycle through games, displaying one per 30 seconds
         if len(self.games) > 1:
             for game in self.games:
                 sport = game['sport']
                 if self.display_change_needed(game):
                     if sport == 'nfl':
-                        self.draw_live_fb_game(game)
+                        self._draw_live_fb(game, True)
+                        self.current_display = game
                     elif sport == 'nba' or sport == 'ncaabb':
-                        self.draw_live_bb_game(game)
+                        self._draw_live_bb(game, True)
+                        self.current_display = game
                     else:
-                        self.draw_live_bb_game(game)  # fallback
+                        self._draw_live_bb(game, True)  # fallback
+                        self.current_display = game
                 for i in range(3):
                     time.sleep(10)
                     update = update_game(game)
                     if sport == 'nfl':
-                        self.update_live_fb_game(update)
+                        self.draw_live_fb(update)
                     elif sport == 'nba' or sport == 'ncaabb':
-                        self.update_live_bb_game(update)
+                        self.draw_live_bb(update)
+                    else:
+                        self.draw_live_bb(update)  # fallback
+                    
             self.run()
 
         else:
             game = self.games[0]
             if self.display_change_needed(game):
                 if game['sport'] == 'nfl':
-                    self.draw_live_fb_game(game)
+                    self._draw_live_fb(game, True)
+                    self.current_display = game
                 elif game['sport'] == 'nba' or game['sport'] == 'ncaabb':
-                    self.draw_live_bb_game(game)
+                    self.draw_live_bb(game, True)
+                    self.current_display = game
                 else:
-                    self.draw_live_bb_game(game)  # fallback
+                    self.draw_live_bb(game, True)  # fallback
+                    self.current_display = game
             for i in range(3):
                 time.sleep(10)
                 update = update_game(game)
                 if game['sport'] == 'nfl':
-                    self.update_live_fb_game(update)
+                    self.draw_live_fb(update)
                 elif game['sport'] == 'nba' or game['sport'] == 'ncaabb':
-                    self.update_live_bb_game(update)
+                    self.draw_live_bb(update)
+                else:
+                    self.draw_live_bb(update)  # fallback
             self.run()
 
 
@@ -217,7 +230,7 @@ class SportsDisplay:
 
         self.current_display = game
 
-    def draw_live_fb_game(self, game):
+    def draw_live_fb(self, data, fetch_logos=True):
         font_small = graphics.Font()
         font_small.LoadFont(FONT_PATH+'5x8.bdf')
 
@@ -227,141 +240,76 @@ class SportsDisplay:
         self.canvas.Clear()
 
         # create team names
-        away_rgb = tuple(int(game['away_color'][i:i+2], 16) for i in (0, 2, 4))
-        away_color = graphics.Color(away_rgb[0], away_rgb[1], away_rgb[2])
-        home_rgb = tuple(int(game['home_color'][i:i+2], 16) for i in (0, 2, 4))
-        home_color = graphics.Color(home_rgb[0], home_rgb[1], home_rgb[2])
         text_color = graphics.Color(255, 255, 255)
+        possession_color = graphics.Color(255, 255, 0)  # yellow
 
-        graphics.DrawText(self.canvas, font_large, 34 if len(game['away_abbreviation']) == 3 else 39, 30, text_color, game['away_abbreviation'])
-        graphics.DrawText(self.canvas, font_large, 70 if len(game['home_abbreviation']) == 3 else 75, 30, text_color, game['home_abbreviation'])
+        away_text_color = possession_color if data.get('possession') == data['away_team'] else text_color
+        home_text_color = possession_color if data.get('possession') == data['home_team'] else text_color
+
+        graphics.DrawText(self.canvas, font_large, 34 if len(data['away_abbreviation']) == 3 else 39, 30, away_text_color, data['away_abbreviation'])
+        graphics.DrawText(self.canvas, font_large, 70 if len(data['home_abbreviation']) == 3 else 75, 30, home_text_color, data['home_abbreviation'])
         graphics.DrawText(self.canvas, font_large, 60, 30, text_color, '@')
 
         # write game score/time
-        graphics.DrawText(self.canvas, font_small, 64-(len(str(game.get('clock','')))*5-1)/2, 19, text_color, game.get('clock',''))
-        graphics.DrawText(self.canvas, font_large, 34 if int(game['away_score']) >= 100 else 39, 12, text_color, game['away_score'])
-        graphics.DrawText(self.canvas, font_large, 70 if int(game['home_score']) >= 100 else 75, 12, text_color, game['home_score'])
-        graphics.DrawText(self.canvas, font_small, 61, 12, text_color, str(game.get('quarter', 'Q?')))
+        graphics.DrawText(self.canvas, font_small, 64-(len(str(data.get('clock','')))*5-1)/2, 19, text_color, data.get('clock',''))
+        graphics.DrawText(self.canvas, font_large, 34 if int(data['away_score']) >= 100 else 39, 12, text_color, data['away_score'])
+        graphics.DrawText(self.canvas, font_large, 70 if int(data['home_score']) >= 100 else 75, 12, text_color, data['home_score'])
+        graphics.DrawText(self.canvas, font_small, 61, 12, text_color, str(data.get('period', 'Q?')))
 
-        # create logos and cache them
-        self.away_logo = Image.open(BytesIO(requests.get(game['away_logo']).content)).resize((32,32),1).convert("RGB")
-        self.home_logo = Image.open(BytesIO(requests.get(game['home_logo']).content)).resize((32,32),1).convert("RGB")
+        # draw down and distance
+        down_text = data.get('down', '')
+        if down_text:
+            graphics.DrawText(self.canvas, font_small, 64 - (len(down_text) * 5 // 2), 32, text_color, down_text)
+
+        if fetch_logos:
+            self.away_logo = Image.open(BytesIO(requests.get(data['away_logo']).content)).resize((32,32),1).convert("RGB")
+            self.home_logo = Image.open(BytesIO(requests.get(data['home_logo']).content)).resize((32,32),1).convert("RGB")
+        
         self.canvas.SetImage(self.away_logo, 0, 0)
         self.canvas.SetImage(self.home_logo, 96, 0)
         self.canvas = self.matrix.SwapOnVSync(self.canvas)
 
-        self.current_display = game
 
 
-    def update_live_fb_game(self, update):
-        try:
-            self.log(f"Updating FB game: {update.get('clock', 'N/A')} - {update['away_score']}-{update['home_score']}")
-            font_small = graphics.Font()
-            font_small.LoadFont(FONT_PATH+'5x8.bdf')
+    def draw_live_bb(self, data, fetch_logos=True):
+        font_small = graphics.Font()
+        font_small.LoadFont(FONT_PATH+'5x8.bdf')
 
-            font_large = graphics.Font()
-            font_large.LoadFont(FONT_PATH+'8x13B.bdf')
-            text_color = graphics.Color(255, 255, 255)
+        font_large = graphics.Font()
+        font_large.LoadFont(FONT_PATH+'8x13B.bdf')
 
-            self.canvas.Clear()
+        self.canvas.Clear()
 
-            # Redraw team names
-            away_rgb = tuple(int(update['away_color'][i:i+2], 16) for i in (0, 2, 4))
-            away_color = graphics.Color(away_rgb[0], away_rgb[1], away_rgb[2])
-            home_rgb = tuple(int(update['home_color'][i:i+2], 16) for i in (0, 2, 4))
-            home_color = graphics.Color(home_rgb[0], home_rgb[1], home_rgb[2])
+        # create team names
+        text_color = graphics.Color(255, 255, 255)
 
-            graphics.DrawText(self.canvas, font_large, 34 if len(update['away_abbreviation']) == 3 else 39, 30, text_color, update['away_abbreviation'])
-            graphics.DrawText(self.canvas, font_large, 70 if len(update['home_abbreviation']) == 3 else 75, 30, text_color, update['home_abbreviation'])
-            graphics.DrawText(self.canvas, font_large, 60, 30, text_color, '@')
+        graphics.DrawText(self.canvas, font_large, 34 if len(data['away_abbreviation']) == 3 else 39, 30, text_color, data['away_abbreviation'])
+        graphics.DrawText(self.canvas, font_large, 70 if len(data['home_abbreviation']) == 3 else 75, 30, text_color, data['home_abbreviation'])
+        graphics.DrawText(self.canvas, font_large, 60, 30, text_color, '@')
 
-            # write game score/time
-            graphics.DrawText(self.canvas, font_small, 64-(len(str(update.get('clock','')))*5-1)/2, 19, text_color, update.get('clock',''))
-            graphics.DrawText(self.canvas, font_large, 34 if int(update['away_score']) >= 100 else 39, 12, text_color, update['away_score'])
-            graphics.DrawText(self.canvas, font_large, 70 if int(update['home_score']) >= 100 else 75, 12, text_color, update['home_score'])
-            graphics.DrawText(self.canvas, font_small, 61, 12, text_color, str(update.get('quarter', 'Q?')))
+        # write game score/time
+        graphics.DrawText(self.canvas, font_small, 64-(len(str(data['clock']))*5-1)/2, 19, text_color, data['clock'])
+        graphics.DrawText(self.canvas, font_large, 34 if int(data['away_score']) >= 100 else 39, 12, text_color, data['away_score'])
+        graphics.DrawText(self.canvas, font_large, 70 if int(data['home_score']) >= 100 else 75, 12, text_color, data['home_score'])
+        graphics.DrawText(self.canvas, font_small, 61, 12, text_color, str(data['period']))
 
-            # Use cached logos
-            if hasattr(self, 'away_logo') and hasattr(self, 'home_logo'):
-                self.canvas.SetImage(self.away_logo, 0, 0)
-                self.canvas.SetImage(self.home_logo, 96, 0)
-            self.canvas = self.matrix.SwapOnVSync(self.canvas)
-            self.log("FB game update successful")
-        except Exception as e:
-            self.log(f"Error updating FB game: {e}")
-            import traceback
-            self.log(traceback.format_exc())
-
+        if fetch_logos:
+            self.away_logo = Image.open(BytesIO(requests.get(data['away_logo']).content)).resize((32,32),1).convert("RGB")
+            self.home_logo = Image.open(BytesIO(requests.get(data['home_logo']).content)).resize((32,32),1).convert("RGB")
+        
+        self.canvas.SetImage(self.away_logo, 0, 0)
+        self.canvas.SetImage(self.home_logo, 96, 0)
+        self.canvas = self.matrix.SwapOnVSync(self.canvas)
 
     def draw_live_bb_game(self, game):
-        font_small = graphics.Font()
-        font_small.LoadFont(FONT_PATH+'5x8.bdf')
-
-        font_large = graphics.Font()
-        font_large.LoadFont(FONT_PATH+'8x13B.bdf')
-
-        self.canvas.Clear()
-
-        # create team names
-        away_rgb = tuple(int(game['away_color'][i:i+2], 16) for i in (0, 2, 4))
-        away_color = graphics.Color(away_rgb[0], away_rgb[1], away_rgb[2])
-        home_rgb = tuple(int(game['home_color'][i:i+2], 16) for i in (0, 2, 4))
-        home_color = graphics.Color(home_rgb[0], home_rgb[1], home_rgb[2])
-        text_color = graphics.Color(255, 255, 255)
-
-        graphics.DrawText(self.canvas, font_large, 34 if len(game['away_abbreviation']) == 3 else 39, 30, text_color, game['away_abbreviation'])
-        graphics.DrawText(self.canvas, font_large, 70 if len(game['home_abbreviation']) == 3 else 75, 30, text_color, game['home_abbreviation'])
-        graphics.DrawText(self.canvas, font_large, 60, 30, text_color, '@')
-
-        # write game score/time
-        graphics.DrawText(self.canvas, font_small, 64-(len(str(game['clock']))*5-1)/2, 19, text_color, game['clock'])
-        graphics.DrawText(self.canvas, font_large, 34 if int(game['away_score']) >= 100 else 39, 12, text_color, game['away_score'])
-        graphics.DrawText(self.canvas, font_large, 70 if int(game['home_score']) >= 100 else 75, 12, text_color, game['home_score'])
-        graphics.DrawText(self.canvas, font_small, 61, 12, text_color, str(game['period']))
-
-        # create logos and cache them
-        self.away_logo = Image.open(BytesIO(requests.get(game['away_logo']).content)).resize((32,32),1).convert("RGB")
-        self.home_logo = Image.open(BytesIO(requests.get(game['home_logo']).content)).resize((32,32),1).convert("RGB")
-        self.canvas.SetImage(self.away_logo, 0, 0)
-        self.canvas.SetImage(self.home_logo, 96, 0)
-        self.canvas = self.matrix.SwapOnVSync(self.canvas)
-
+        self._draw_live_bb(game, fetch_logos=True)
         self.current_display = game
 
 
     def update_live_bb_game(self, update):
         try:
             self.log(f"Updating BB game: {update.get('clock', 'N/A')} - {update['away_score']}-{update['home_score']}")
-            font_small = graphics.Font()
-            font_small.LoadFont(FONT_PATH+'5x8.bdf')
-
-            font_large = graphics.Font()
-            font_large.LoadFont(FONT_PATH+'8x13B.bdf')
-            text_color = graphics.Color(255, 255, 255)
-
-            self.canvas.Clear()
-
-            # Redraw team names (they don't change, but to be safe)
-            away_rgb = tuple(int(update['away_color'][i:i+2], 16) for i in (0, 2, 4))
-            away_color = graphics.Color(away_rgb[0], away_rgb[1], away_rgb[2])
-            home_rgb = tuple(int(update['home_color'][i:i+2], 16) for i in (0, 2, 4))
-            home_color = graphics.Color(home_rgb[0], home_rgb[1], home_rgb[2])
-
-            graphics.DrawText(self.canvas, font_large, 34 if len(update['away_abbreviation']) == 3 else 39, 30, text_color, update['away_abbreviation'])
-            graphics.DrawText(self.canvas, font_large, 70 if len(update['home_abbreviation']) == 3 else 75, 30, text_color, update['home_abbreviation'])
-            graphics.DrawText(self.canvas, font_large, 60, 30, text_color, '@')
-
-            # write game score/time
-            graphics.DrawText(self.canvas, font_small, 64-(len(str(update['clock']))*5-1)/2, 19, text_color, update['clock'])
-            graphics.DrawText(self.canvas, font_large, 34 if int(update['away_score']) >= 100 else 39, 12, text_color, update['away_score'])
-            graphics.DrawText(self.canvas, font_large, 70 if int(update['home_score']) >= 100 else 75, 12, text_color, update['home_score'])
-            graphics.DrawText(self.canvas, font_small, 61, 12, text_color, str(update['period']))
-
-            # Use cached logos
-            if hasattr(self, 'away_logo') and hasattr(self, 'home_logo'):
-                self.canvas.SetImage(self.away_logo, 0, 0)
-                self.canvas.SetImage(self.home_logo, 96, 0)
-            self.canvas = self.matrix.SwapOnVSync(self.canvas)
+            self._draw_live_bb(update, fetch_logos=False)
             self.log("BB game update successful")
         except Exception as e:
             self.log(f"Error updating BB game: {e}")

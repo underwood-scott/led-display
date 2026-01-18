@@ -65,6 +65,10 @@ def update_game(game):
             # Update the existing game dict with new values
             game['clock'] = event['status']['displayClock']
             game['period'] = event['status']['period']
+            if game['sport'] == 'nfl' or game['sport'] == 'ncaafb':
+                game['down'] = competition.get('situation', {}).get('shortDownDistanceText')
+                game['spot'] = competition.get('situation', {}).get('possessionText')
+                game['possession'] = competition.get('situation', {}).get('possession')
             for competitor in competition['competitors']:
                 if competitor['homeAway'] == 'home':
                     game['home_score'] = competitor['score']

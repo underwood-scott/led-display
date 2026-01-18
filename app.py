@@ -3,8 +3,13 @@ from flask import Flask, render_template, request, redirect, url_for
 from multiprocessing import Process
 import os
 import signal
+import logging
 
 app = Flask(__name__)
+
+# Configure logging
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 # Default teams (can be changed via web)
 NFL_TEAMS = ['Green Bay Packers', 'Chicago Bears']
@@ -45,8 +50,12 @@ def set_teams():
 def stop_display_process():
     global display_process, display_type
     if display_process and display_process.is_alive():
+        logger.info(f"Stopping display process. PID: {display_process.pid}")
         os.kill(display_process.pid, signal.SIGTERM)
         display_process.join(timeout=2)
+        logger.info("Display process stopped.")
+    else:
+        logger.info("No active display process to stop.")
     display_process = None
     display_type = None
 
@@ -55,11 +64,16 @@ def stop_display_process():
 def start_sports_display():
     global display_process, display_type
     stop_display_process()
-
-    from sports_display.app import SportsDisplay
-    display_process = Process(target=SportsDisplay(NFL_TEAMS, NCAAFB_TEAMS, NBA_TEAMS, NCAABB_TEAMS, MLB_TEAMS).run)
-    display_process.start()
-    display_type = "Sports Display"
+    logger.info("Starting Sports Display process...")
+    try:
+        from sports_display.app import SportsDisplay
+        display_process = Process(target=SportsDisplay(NFL_TEAMS, NCAAFB_TEAMS, NBA_TEAMS, NCAABB_TEAMS, MLB_TEAMS).run)
+        display_process.start()
+        display_type = "Sports Display"
+        logger.info(f"Sports Display process started. PID: {display_process.pid}, Alive: {display_process.is_alive()}")
+    except Exception as e:
+        logger.error(f"Failed to start Sports Display: {e}")
+        display_type = "Error"
     return redirect(url_for("index"))
 
 
@@ -67,17 +81,22 @@ def start_sports_display():
 def start_metro_display():
     global display_process, display_type
     stop_display_process()
-    # Try to import MetroDisplay if available
-
-    import subprocess
-    display_process = Process(target=subprocess.call, args=(['sudo', 'metro_display/run.sh'],))
-    display_process.start()
-    display_type = "Metro Display"
+    logger.info("Starting Metro Display process...")
+    try:
+        import subprocess
+        display_process = Process(target=subprocess.call, args=(['sudo', 'metro_display/run.sh'],))
+        display_process.start()
+        display_type = "Metro Display"
+        logger.info(f"Metro Display process started. PID: {display_process.pid}, Alive: {display_process.is_alive()}")
+    except Exception as e:
+        logger.error(f"Failed to start Metro Display: {e}")
+        display_type = "Error"
     return redirect(url_for("index"))
 
 
 @app.route("/stop_display", methods=["POST"])
 def stop_display():
+    logger.info("Stop display requested.")
     stop_display_process()
     return redirect(url_for("index"))
 

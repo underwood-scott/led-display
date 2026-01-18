@@ -6,6 +6,7 @@ from PIL import Image
 import requests
 from rgbmatrix import RGBMatrix, RGBMatrixOptions, graphics
 import time
+import logging
 
 
 UTC_OFFSET = -5
@@ -20,6 +21,9 @@ app = Flask(__name__)
 
 class SportsDisplay:
 
+    def log(self, message):
+        logging.info(f"[SportsDisplay] {message}")
+
     def __init__(self, nfl_teams, ncaafb_teams, nba_teams, ncaabb_teams, mlb_teams):
         self.teams = {'nfl': nfl_teams,
                       'ncaafb': ncaafb_teams,
@@ -29,29 +33,35 @@ class SportsDisplay:
         self.current_display = None
         self.matrix = self.init_matrix()
         self.canvas = self.matrix.CreateFrameCanvas()
+        self.log("Initialized SportsDisplay instance.")
 
 
     def run(self):
+        self.log("run() called. Starting display loop.")
         self.find_games()
         self.determine_games_to_display()
 
 
     def find_games(self):
+        self.log("Finding games...")
         self.games = []
         for sport in ['nfl', 'ncaafb', 'nba', 'ncaabb', 'mlb']:
             self.games = self.games + get_current_games(sport, self.teams[sport], UTC_OFFSET)
-            self.unique_statuses = list(set([game['status'] for game in self.games]))
+        self.unique_statuses = list(set([game['status'] for game in self.games]))
+        self.log(f"Found {len(self.games)} games. Statuses: {self.unique_statuses}")
 
 
     def determine_games_to_display(self):
+        self.log("Determining which games to display...")
         if len(self.games) == 0:
+            self.log("No games found. Running no-games display.")
             self.run_display_no_games()
-        if 'STATUS_IN_PROGRESS' in self.unique_statuses:
-            self.games = [game for game in self.games if game['status'] == 'STATUS_IN_PROGRESS'] # only keep in progress games right now
-            # function that runs in-progress game(s)
+        elif 'STATUS_IN_PROGRESS' in self.unique_statuses:
+            self.log("Found in-progress games. Running live display.")
+            self.games = [game for game in self.games if game['status'] == 'STATUS_IN_PROGRESS']
             self.run_display_live()
         else:
-            # function that rotates through scheduled and final games
+            self.log("No in-progress games. Rotating through scheduled/final games.")
             self.run_display_not_live()
 
 
@@ -66,11 +76,12 @@ class SportsDisplay:
 
 
     def run_display_not_live(self):
+        self.log("Displaying: Not live (scheduled/final) games.")
         # cycle through games, displaying one per 30 seconds
         for game in self.games:
             if self.display_change_needed(game):
                 if game['status'] == 'STATUS_SCHEDULED':
-            	    self.draw_pregame(game)
+                    self.draw_pregame(game)
                 elif game['status'] == 'STATUS_FINAL':
                     self.draw_postgame(game)
             time.sleep(30)
@@ -79,6 +90,7 @@ class SportsDisplay:
 
 
     def run_display_no_games(self):
+        self.log("Displaying: No games today.")
         if self.display_change_needed('No games'):
             font = graphics.Font()
             font.LoadFont(FONT_PATH+'9x15B.bdf')
@@ -94,6 +106,7 @@ class SportsDisplay:
 
 
     def run_display_live(self):
+        self.log("Displaying: Live games.")
         # cycle through games, displaying one per 30 seconds
         if len(self.games) > 1:
             for game in self.games:
@@ -327,6 +340,7 @@ class SportsDisplay:
 
 
 if __name__ == "__main__":
+    logging.basicConfig(level=logging.INFO)
 #    server = Process(target = serve)
 #    server.start()
     # display_runner = Process(target = run_display, args = ['/home/scott.underwood/Documents/sports-sign/sports-display/6x10.bdf'])

@@ -1,3 +1,9 @@
+import sys
+import os
+
+# Add parent directory to sys.path for imports
+sys.path.insert(0, os.path.dirname(os.path.dirname(__file__)))
+
 from flask import Flask, render_template
 from sports_display.get_data import get_current_games, update_game
 from io import BytesIO
@@ -7,11 +13,6 @@ import requests
 from rgbmatrix import RGBMatrix, RGBMatrixOptions, graphics
 import time
 import logging
-import sys
-import os
-
-# Add parent directory to sys.path for imports
-sys.path.insert(0, os.path.dirname(os.path.dirname(__file__)))
 
 
 UTC_OFFSET = -5

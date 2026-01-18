@@ -155,6 +155,7 @@ class SportsDisplay:
     def init_matrix(self):
         options = RGBMatrixOptions()
         options.rows = 32
+        options.cols = 64
         options.chain_length = 4
         options.pwm_bits = 3
         options.pwm_lsb_nanoseconds = 300

@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>LED Display Control</title>
+    <style>
+        body { font-family: sans-serif; background: #f8fafc; color: #222; }
+        .container { max-width: 500px; margin: 40px auto; background: #fff; border-radius: 8px; box-shadow: 0 2px 8px #0001; padding: 32px; }
+        h1 { text-align: center; }
+        form { margin-bottom: 24px; }
+        label { display: block; margin: 12px 0 4px; }
+        input[type=text], textarea { width: 100%; padding: 8px; border-radius: 4px; border: 1px solid #ccc; }
+        button { background: #2563eb; color: #fff; border: none; border-radius: 4px; padding: 10px 20px; font-size: 1rem; margin: 8px 0; cursor: pointer; }
+        button.stop { background: #ef4444; }
+        .status { margin: 16px 0; font-weight: bold; }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1>LED Display Control</h1>
+    <form method="POST" action="/set_teams">
+        <label for="nfl">NFL Teams (comma separated)</label>
+        <input type="text" id="nfl" name="nfl" value="{{ nfl_teams }}">
+        <label for="nba">NBA Teams (comma separated)</label>
+        <input type="text" id="nba" name="nba" value="{{ nba_teams }}">
+        <label for="mlb">MLB Teams (comma separated)</label>
+        <input type="text" id="mlb" name="mlb" value="{{ mlb_teams }}">
+        <label for="ncaafb">NCAAFB Teams (comma separated)</label>
+        <input type="text" id="ncaafb" name="ncaafb" value="{{ ncaafb_teams }}">
+        <label for="ncaabb">NCAABB Teams (comma separated)</label>
+        <input type="text" id="ncaabb" name="ncaabb" value="{{ ncaabb_teams }}">
+        <button type="submit">Set Teams</button>
+    </form>
+    <form method="POST" action="/start_sports_display">
+        <button type="submit">Start Sports Display</button>
+    </form>
+    <form method="POST" action="/start_metro_display">
+        <button type="submit">Start Metro Display</button>
+    </form>
+    <form method="POST" action="/stop_display">
+        <button type="submit" class="stop">Stop Display</button>
+    </form>
+    <div class="status">{{ status }}</div>
+</div>
+</body>
+</html>

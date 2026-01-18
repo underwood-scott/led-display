@@ -19,6 +19,7 @@ FONT_PATH = '/home/sunderwood/led-display/rpi-rgb-led-matrix/fonts/'
 app = Flask(__name__)
 
 class SportsDisplay:
+
     def __init__(self, nfl_teams, ncaafb_teams, nba_teams, ncaabb_teams, mlb_teams):
         self.teams = {'nfl': nfl_teams,
                       'ncaafb': ncaafb_teams,
@@ -96,22 +97,39 @@ class SportsDisplay:
         # cycle through games, displaying one per 30 seconds
         if len(self.games) > 1:
             for game in self.games:
+                sport = game['sport']
                 if self.display_change_needed(game):
-                    self.draw_live_nba_game(game)
+                    if sport == 'nfl':
+                        self.draw_live_fb_game(game)
+                    elif sport == 'nba' or sport == 'ncaabb':
+                        self.draw_live_bb_game(game)
+                    else:
+                        self.draw_live_bb_game(game)  # fallback
                 for i in range(3):
                     time.sleep(10)
                     update = update_game(game)
-                    self.update_live_nba_game(update)
+                    if sport == 'nfl':
+                        self.update_live_fb_game(update)
+                    elif sport == 'nba' or sport == 'ncaabb':
+                        self.update_live_bb_game(update)
             self.run()
 
         else:
-            if self.display_change_needed(self.games[0]):
-                self.draw_live_nba_game(self.games[0])
+            game = self.games[0]
+            if self.display_change_needed(game):
+                if game['sport'] == 'nfl':
+                    self.draw_live_fb_game(game)
+                elif game['sport'] == 'nba' or game['sport'] == 'ncaabb':
+                    self.draw_live_bb_game(game)
+                else:
+                    self.draw_live_bb_game(game)  # fallback
             for i in range(3):
                 time.sleep(10)
-                update = update_game(self.games[0])
-                print(update)
-                self.update_live_nba_game(update)
+                update = update_game(game)
+                if game['sport'] == 'nfl':
+                    self.update_live_fb_game(update)
+                elif game['sport'] == 'nba' or game['sport'] == 'ncaabb':
+                    self.update_live_bb_game(update)
             self.run()
 
 
@@ -159,8 +177,61 @@ class SportsDisplay:
 
         self.current_display = game
 
+    def draw_live_fb_game(self, game):
+        font_small = graphics.Font()
+        font_small.LoadFont(FONT_PATH+'5x8.bdf')
 
-    def draw_live_nba_game(self, game):
+        font_large = graphics.Font()
+        font_large.LoadFont(FONT_PATH+'8x13B.bdf')
+
+        self.canvas.Clear()
+
+        # create team names
+        away_rgb = tuple(int(game['away_color'][i:i+2], 16) for i in (0, 2, 4))
+        away_color = graphics.Color(away_rgb[0], away_rgb[1], away_rgb[2])
+        home_rgb = tuple(int(game['home_color'][i:i+2], 16) for i in (0, 2, 4))
+        home_color = graphics.Color(home_rgb[0], home_rgb[1], home_rgb[2])
+        text_color = graphics.Color(255, 255, 255)
+
+        graphics.DrawText(self.canvas, font_large, 34 if len(game['away_abbreviation']) == 3 else 39, 30, text_color, game['away_abbreviation'])
+        graphics.DrawText(self.canvas, font_large, 70 if len(game['home_abbreviation']) == 3 else 75, 30, text_color, game['home_abbreviation'])
+        graphics.DrawText(self.canvas, font_large, 60, 30, text_color, '@')
+
+        # write game score/time
+        graphics.DrawText(self.canvas, font_small, 64-(len(str(game.get('clock','')))*5-1)/2, 19, text_color, game.get('clock',''))
+        graphics.DrawText(self.canvas, font_large, 34 if int(game['away_score']) >= 100 else 39, 12, text_color, game['away_score'])
+        graphics.DrawText(self.canvas, font_large, 70 if int(game['home_score']) >= 100 else 75, 12, text_color, game['home_score'])
+        graphics.DrawText(self.canvas, font_small, 61, 12, text_color, str(game.get('quarter', 'Q?')))
+
+        # create logos
+        away_response = requests.get(game['away_logo'])
+        away_logo = Image.open(BytesIO(away_response.content)).resize((32,32),1)
+        self.canvas.SetImage(away_logo.convert("RGB"), 0, 0)
+        home_response = requests.get(game['home_logo'])
+        home_logo = Image.open(BytesIO(home_response.content)).resize((32,32),1)
+        self.canvas.SetImage(home_logo.convert("RGB"), 96, 0)
+        self.canvas = self.matrix.SwapOnVSync(self.canvas)
+
+        self.current_display = game
+
+
+    def update_live_fb_game(self, update):
+        font_small = graphics.Font()
+        font_small.LoadFont(FONT_PATH+'5x8.bdf')
+
+        font_large = graphics.Font()
+        font_large.LoadFont(FONT_PATH+'8x13B.bdf')
+        text_color = graphics.Color(255, 255, 255)
+
+        # write game score/time
+        graphics.DrawText(self.canvas, font_small, 64-(len(str(update.get('clock','')))*5-1)/2, 19, text_color, update.get('clock',''))
+        graphics.DrawText(self.canvas, font_large, 34 if int(update['away_score']) >= 100 else 39, 12, text_color, update['away_score'])
+        graphics.DrawText(self.canvas, font_large, 70 if int(update['home_score']) >= 100 else 75, 12, text_color, update['home_score'])
+        graphics.DrawText(self.canvas, font_small, 61, 12, text_color, str(update.get('quarter', 'Q?')))
+        self.canvas = self.matrix.SwapOnVSync(self.canvas)
+
+
+    def draw_live_bb_game(self, game):
         font_small = graphics.Font()
         font_small.LoadFont(FONT_PATH+'5x8.bdf')
 
@@ -198,7 +269,7 @@ class SportsDisplay:
         self.current_display = game
 
 
-    def update_live_nba_game(self, update):
+    def update_live_bb_game(self, update):
         font_small = graphics.Font()
         font_small.LoadFont(FONT_PATH+'5x8.bdf')
 

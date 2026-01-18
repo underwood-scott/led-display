@@ -22,18 +22,6 @@ NCAAFB_TEAMS = ['Wisconsin Badgers']
 NCAABB_TEAMS = ['Wisconsin Badgers', 'Marquette Golden Eagles']
 MLB_TEAMS = ['Milwaukee Brewers', 'Chicago Cubs']
 
-# Load teams from temp file if available
-try:
-    with open('sports_display/sports_teams.json', 'r') as f:
-        teams_data = json.load(f)
-    NFL_TEAMS = teams_data.get('nfl', NFL_TEAMS)
-    NBA_TEAMS = teams_data.get('nba', NBA_TEAMS)
-    NCAAFB_TEAMS = teams_data.get('ncaafb', NCAAFB_TEAMS)
-    NCAABB_TEAMS = teams_data.get('ncaabb', NCAABB_TEAMS)
-    MLB_TEAMS = teams_data.get('mlb', MLB_TEAMS)
-except (FileNotFoundError, json.JSONDecodeError):
-    pass
-
 FONT_PATH = '/home/sunderwood/led-display/rpi-rgb-led-matrix/fonts/'
 
 app = Flask(__name__)
@@ -57,8 +45,31 @@ class SportsDisplay:
 
     def run(self):
         self.log("run() called. Starting display loop.")
+        self.update_teams()
         self.find_games()
         self.determine_games_to_display()
+
+    
+    def update_teams(self):
+        # Load teams from temp file if available
+        try:
+            with open('sports_display/sports_teams.json', 'r') as f:
+                teams_data = json.load(f)
+            # Update globals
+            nfl_teams = teams_data.get('nfl', NFL_TEAMS)
+            nba_teams = teams_data.get('nba', NBA_TEAMS)
+            ncaafb_teams = teams_data.get('ncaafb', NCAAFB_TEAMS)
+            ncaabb_teams = teams_data.get('ncaabb', NCAABB_TEAMS)
+            mlb_teams = teams_data.get('mlb', MLB_TEAMS)
+            # Update instance teams
+            self.teams = {'nfl': nfl_teams,
+                          'ncaafb': ncaafb_teams,
+                          'nba': nba_teams,
+                          'ncaabb': ncaabb_teams,
+                          'mlb': mlb_teams}
+            self.log("Teams updated from file.")
+        except (FileNotFoundError, json.JSONDecodeError):
+            self.log("No team updates found; using defaults.")
 
 
     def find_games(self):

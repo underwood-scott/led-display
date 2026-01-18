@@ -47,12 +47,22 @@ def index():
 
 @app.route("/set_teams", methods=["POST"])
 def set_teams():
-    global NFL_TEAMS, NBA_TEAMS, MLB_TEAMS, NCAAFB_TEAMS, NCAABB_TEAMS
-    NFL_TEAMS = [t.strip() for t in request.form.get("nfl", "").split(",") if t.strip()]
-    NBA_TEAMS = [t.strip() for t in request.form.get("nba", "").split(",") if t.strip()]
-    MLB_TEAMS = [t.strip() for t in request.form.get("mlb", "").split(",") if t.strip()]
-    NCAAFB_TEAMS = [t.strip() for t in request.form.get("ncaafb", "").split(",") if t.strip()]
-    NCAABB_TEAMS = [t.strip() for t in request.form.get("ncaabb", "").split(",") if t.strip()]
+    nfl_teams = [t.strip() for t in request.form.get("nfl", "").split(",") if t.strip()]
+    nba_teams = [t.strip() for t in request.form.get("nba", "").split(",") if t.strip()]
+    mlb_teams = [t.strip() for t in request.form.get("mlb", "").split(",") if t.strip()]
+    ncaafb_teams = [t.strip() for t in request.form.get("ncaafb", "").split(",") if t.strip()]
+    ncaabb_teams = [t.strip() for t in request.form.get("ncaabb", "").split(",") if t.strip()]
+    # write updated teams to a temp file for the subprocess to read
+    teams_data = {
+        'nfl': nfl_teams,
+        'nba': nba_teams,
+        'ncaafb': ncaafb_teams,
+        'ncaabb': ncaabb_teams,
+        'mlb': mlb_teams
+    }
+    with open('/tmp/sports_teams.json', 'w') as f:
+        json.dump(teams_data, f)
+
     return redirect(url_for("index"))
 
 

@@ -17,10 +17,6 @@ display_process = None
 display_type = None
 
 
-if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=5000, debug=True)
-
-
 @app.route("/", methods=["GET"])
 def index():
     status = f"Current: {display_type or 'None'}"
@@ -85,3 +81,8 @@ def start_metro_display():
 def stop_display():
     stop_display_process()
     return redirect(url_for("index"))
+
+
+
+if __name__ == "__main__":
+    app.run(host="0.0.0.0", port=5000, debug=True)

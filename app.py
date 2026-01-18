@@ -12,7 +12,7 @@ def turn_on():
     if process is None:
         # Replace 'metro.py' with the actual entry script in your repo
         # Use 'sudo' because the LED matrix library requires root
-        process = subprocess.Popen(["sudo", "rpi-metro-display/run.sh"], preexec_fn=os.setsid)
+        process = subprocess.Popen(["sudo", "metro-display/run.sh"], preexec_fn=os.setsid)
         return "Display turned ON"
     return "Display is already ON"
 

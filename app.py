@@ -50,10 +50,13 @@ def set_teams():
 
 def stop_display_process():
     global display_process, display_type
-    if display_process and display_process.is_alive():
+    if display_process and display_process.poll() is None:
         logger.info(f"Stopping display process. PID: {display_process.pid}")
         display_process.terminate()
-        display_process.join(timeout=2)
+        try:
+            display_process.wait(timeout=2)
+        except subprocess.TimeoutExpired:
+            display_process.kill()
         logger.info("Display process stopped.")
     else:
         logger.info("No active display process to stop.")
@@ -67,11 +70,10 @@ def start_sports_display():
     stop_display_process()
     logger.info("Starting Sports Display process...")
     try:
-        from sports_display.app import SportsDisplay
-        display_process = Process(target=SportsDisplay(NFL_TEAMS, NCAAFB_TEAMS, NBA_TEAMS, NCAABB_TEAMS, MLB_TEAMS).run)
+        display_process = Process(target=subprocess.call, args=(['sudo', 'python3', 'sports_display/app.py'],))
         display_process.start()
         display_type = "Sports Display"
-        logger.info(f"Sports Display process started. PID: {display_process.pid}, Alive: {display_process.is_alive()}")
+        logger.info(f"Sports Display process started. PID: {display_process.pid}")
     except Exception as e:
         logger.error(f"Failed to start Sports Display: {e}")
         display_type = "Error"

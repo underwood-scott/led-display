@@ -197,6 +197,7 @@ class SportsDisplay:
         self.canvas = self.matrix.SwapOnVSync(self.canvas)
 
         self.current_display = game
+        self.log(f"Drew pregame for {game['away_abbreviation']} @ {game['home_abbreviation']}")
 
     def draw_live_fb_game(self, game):
         font_small = graphics.Font()

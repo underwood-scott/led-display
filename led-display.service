@@ -4,7 +4,7 @@ After=network.target
 
 [Service]
 WorkingDirectory=/home/sunderwood/led-display
-ExecStart=/usr/bin/gunicorn --bind 0.0.0.0:5000 app:app
+ExecStart=/usr/bin/gunicorn --workers 1 --bind 0.0.0.0:5000 app:app
 Restart=always
 RestartSec=5
 StandardOutput=journal

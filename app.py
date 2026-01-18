@@ -64,10 +64,10 @@ def stop_display_process():
             if pid_str:
                 try:
                     pid = int(pid_str)
-                    os.kill(pid, signal.SIGTERM)
-                    logger.info(f"Sent SIGTERM to display process PID: {pid}")
-                except (ValueError, ProcessLookupError):
-                    logger.warning(f"PID {pid_str} not valid or process already dead")
+                    os.killpg(os.getpgid(pid), signal.SIGTERM)
+                    logger.info(f"Sent SIGTERM to process group of PID: {pid}")
+                except (ValueError, ProcessLookupError, OSError):
+                    logger.warning(f"PID {pid_str} not valid or process group already dead")
         os.remove(PID_FILE)
     else:
         logger.info("No PID file found; no active display process to stop.")
@@ -93,7 +93,7 @@ def start_sports_display():
         }
         with open('sports_display/sports_teams.json', 'w') as f:
             json.dump(teams_data, f)
-        display_process = subprocess.Popen(['sudo', './sports_display/run.sh'])
+        display_process = subprocess.Popen(['sudo', './sports_display/run.sh'], preexec_fn=os.setsid)
         with open(PID_FILE, 'w') as f:
             f.write(str(display_process.pid))
         with open(TYPE_FILE, 'w') as f:
@@ -112,7 +112,7 @@ def start_metro_display():
     stop_display_process()
     logger.info("Starting Metro Display process...")
     try:
-        display_process = subprocess.Popen(['sudo', './metro_display/run.sh'])
+        display_process = subprocess.Popen(['sudo', './metro_display/run.sh'], preexec_fn=os.setsid)
         with open(PID_FILE, 'w') as f:
             f.write(str(display_process.pid))
         with open(TYPE_FILE, 'w') as f:

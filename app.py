@@ -1,8 +1,7 @@
 
 from flask import Flask, render_template, request, redirect, url_for
 from multiprocessing import Process
-import os
-import signal
+import json
 import logging
 import subprocess
 
@@ -67,6 +66,16 @@ def start_sports_display():
     stop_display_process()
     logger.info("Starting Sports Display process...")
     try:
+        # Write teams to a temp file for the subprocess to read
+        teams_data = {
+            'nfl': NFL_TEAMS,
+            'nba': NBA_TEAMS,
+            'ncaafb': NCAAFB_TEAMS,
+            'ncaabb': NCAABB_TEAMS,
+            'mlb': MLB_TEAMS
+        }
+        with open('sports_display/sports_teams.json', 'w') as f:
+            json.dump(teams_data, f)
         display_process = Process(target=subprocess.call, args=(['sudo', 'python3', 'sports_display/app.py'],))
         display_process.start()
         display_type = "Sports Display"

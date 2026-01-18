@@ -12,6 +12,7 @@ import requests
 from rgbmatrix import RGBMatrix, RGBMatrixOptions, graphics
 import time
 import logging
+import json
 
 
 UTC_OFFSET = -5
@@ -20,6 +21,19 @@ NBA_TEAMS = ['Milwaukee Bucks', 'Los Angeles Lakers', 'Orlando Magic']
 NCAAFB_TEAMS = ['Wisconsin Badgers']
 NCAABB_TEAMS = ['Wisconsin Badgers', 'Marquette Golden Eagles']
 MLB_TEAMS = ['Milwaukee Brewers', 'Chicago Cubs']
+
+# Load teams from temp file if available
+try:
+    with open('sports_display/sports_teams.json', 'r') as f:
+        teams_data = json.load(f)
+    NFL_TEAMS = teams_data.get('nfl', NFL_TEAMS)
+    NBA_TEAMS = teams_data.get('nba', NBA_TEAMS)
+    NCAAFB_TEAMS = teams_data.get('ncaafb', NCAAFB_TEAMS)
+    NCAABB_TEAMS = teams_data.get('ncaabb', NCAABB_TEAMS)
+    MLB_TEAMS = teams_data.get('mlb', MLB_TEAMS)
+except (FileNotFoundError, json.JSONDecodeError):
+    pass
+
 FONT_PATH = '/home/sunderwood/led-display/rpi-rgb-led-matrix/fonts/'
 
 app = Flask(__name__)
@@ -197,7 +211,6 @@ class SportsDisplay:
         self.canvas = self.matrix.SwapOnVSync(self.canvas)
 
         self.current_display = game
-        self.log(f"Drew pregame for {game['away_abbreviation']} @ {game['home_abbreviation']}")
 
     def draw_live_fb_game(self, game):
         font_small = graphics.Font()

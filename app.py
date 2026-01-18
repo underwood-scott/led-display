@@ -4,6 +4,8 @@ from multiprocessing import Process
 import json
 import logging
 import subprocess
+import os
+import signal
 
 app = Flask(__name__)
 
@@ -20,11 +22,18 @@ MLB_TEAMS = ['Milwaukee Brewers', 'Chicago Cubs']
 
 display_process = None
 display_type = None
+PID_FILE = '/tmp/display_pid.txt'
+TYPE_FILE = '/tmp/display_type.txt'
 
 
 @app.route("/", methods=["GET"])
 def index():
-    status = f"Current: {display_type or 'None'}"
+    if os.path.exists(TYPE_FILE):
+        with open(TYPE_FILE, 'r') as f:
+            current_type = f.read().strip()
+    else:
+        current_type = "None"
+    status = f"Current: {current_type}"
     return render_template(
         "index.html",
         nfl_teams=", ".join(NFL_TEAMS),
@@ -49,13 +58,21 @@ def set_teams():
 
 def stop_display_process():
     global display_process, display_type
-    if display_process and display_process.is_alive():
-        logger.info(f"Stopping display process. PID: {display_process.pid}")
-        display_process.terminate()
-        display_process.join(timeout=2)
-        logger.info("Display process stopped.")
+    if os.path.exists(PID_FILE):
+        with open(PID_FILE, 'r') as f:
+            pid_str = f.read().strip()
+            if pid_str:
+                try:
+                    pid = int(pid_str)
+                    os.kill(pid, signal.SIGTERM)
+                    logger.info(f"Sent SIGTERM to display process PID: {pid}")
+                except (ValueError, ProcessLookupError):
+                    logger.warning(f"PID {pid_str} not valid or process already dead")
+        os.remove(PID_FILE)
     else:
-        logger.info("No active display process to stop.")
+        logger.info("No PID file found; no active display process to stop.")
+    if os.path.exists(TYPE_FILE):
+        os.remove(TYPE_FILE)
     display_process = None
     display_type = None
 
@@ -78,6 +95,10 @@ def start_sports_display():
             json.dump(teams_data, f)
         display_process = Process(target=subprocess.call, args=(['sudo', './sports_display/run.sh'],))
         display_process.start()
+        with open(PID_FILE, 'w') as f:
+            f.write(str(display_process.pid))
+        with open(TYPE_FILE, 'w') as f:
+            f.write("Sports Display")
         display_type = "Sports Display"
         logger.info(f"Sports Display process started. PID: {display_process.pid}")
     except Exception as e:
@@ -94,6 +115,10 @@ def start_metro_display():
     try:
         display_process = Process(target=subprocess.call, args=(['sudo', './metro_display/run.sh'],))
         display_process.start()
+        with open(PID_FILE, 'w') as f:
+            f.write(str(display_process.pid))
+        with open(TYPE_FILE, 'w') as f:
+            f.write("Metro Display")
         display_type = "Metro Display"
         logger.info(f"Metro Display process started. PID: {display_process.pid}, Alive: {display_process.is_alive()}")
     except Exception as e:

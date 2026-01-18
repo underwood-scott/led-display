@@ -93,8 +93,7 @@ def start_sports_display():
         }
         with open('sports_display/sports_teams.json', 'w') as f:
             json.dump(teams_data, f)
-        display_process = Process(target=subprocess.call, args=(['sudo', './sports_display/run.sh'],))
-        display_process.start()
+        display_process = subprocess.Popen(['sudo', './sports_display/run.sh'])
         with open(PID_FILE, 'w') as f:
             f.write(str(display_process.pid))
         with open(TYPE_FILE, 'w') as f:
@@ -113,14 +112,13 @@ def start_metro_display():
     stop_display_process()
     logger.info("Starting Metro Display process...")
     try:
-        display_process = Process(target=subprocess.call, args=(['sudo', './metro_display/run.sh'],))
-        display_process.start()
+        display_process = subprocess.Popen(['sudo', './metro_display/run.sh'])
         with open(PID_FILE, 'w') as f:
             f.write(str(display_process.pid))
         with open(TYPE_FILE, 'w') as f:
             f.write("Metro Display")
         display_type = "Metro Display"
-        logger.info(f"Metro Display process started. PID: {display_process.pid}, Alive: {display_process.is_alive()}")
+        logger.info(f"Metro Display process started. PID: {display_process.pid}, Alive: {display_process.poll() is None}")
     except Exception as e:
         logger.error(f"Failed to start Metro Display: {e}")
         display_type = "Error"

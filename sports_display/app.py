@@ -7,6 +7,11 @@ import requests
 from rgbmatrix import RGBMatrix, RGBMatrixOptions, graphics
 import time
 import logging
+import sys
+import os
+
+# Add parent directory to sys.path for imports
+sys.path.insert(0, os.path.dirname(os.path.dirname(__file__)))
 
 
 UTC_OFFSET = -5

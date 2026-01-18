@@ -4,10 +4,9 @@ import os
 # Add parent directory to sys.path for imports
 sys.path.insert(0, os.path.dirname(os.path.dirname(__file__)))
 
-from flask import Flask, render_template
+from flask import Flask
 from sports_display.get_data import get_current_games, update_game
 from io import BytesIO
-from multiprocessing import Process
 from PIL import Image
 import requests
 from rgbmatrix import RGBMatrix, RGBMatrixOptions, graphics
@@ -156,7 +155,7 @@ class SportsDisplay:
         options = RGBMatrixOptions()
         options.rows = 32
         options.cols = 64
-        options.chain_length = 4
+        options.chain_length = 2
         options.parallel = 1
         options.hardware_mapping = "adafruit-hat"
         options.pwm_bits = 3
@@ -344,15 +343,8 @@ class SportsDisplay:
         self.current_display = game
 
 
-    # def serve(self):
-    #     app.run(host="0.0.0.0")
-
-
 if __name__ == "__main__":
     logging.basicConfig(level=logging.INFO)
-#    server = Process(target = serve)
-#    server.start()
-    # display_runner = Process(target = run_display, args = ['/home/scott.underwood/Documents/sports-sign/sports-display/6x10.bdf'])
-    # display_runner.start()
+
     display = SportsDisplay(NFL_TEAMS, NCAAFB_TEAMS, NBA_TEAMS, NCAABB_TEAMS, MLB_TEAMS)
     display.run()

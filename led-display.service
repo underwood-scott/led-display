@@ -3,7 +3,6 @@ Description=Fantasy LED Display App
 After=network.target
 
 [Service]
-User=root  # Replace with your username (must have sudo access for subprocesses)
 WorkingDirectory=/home/sunderwood/led-display
 ExecStart=/usr/bin/gunicorn --bind 0.0.0.0:5000 app:app
 Restart=always

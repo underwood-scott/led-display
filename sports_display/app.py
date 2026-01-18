@@ -238,13 +238,11 @@ class SportsDisplay:
         graphics.DrawText(self.canvas, font_large, 70 if int(game['home_score']) >= 100 else 75, 12, text_color, game['home_score'])
         graphics.DrawText(self.canvas, font_small, 61, 12, text_color, str(game.get('quarter', 'Q?')))
 
-        # create logos
-        away_response = requests.get(game['away_logo'])
-        away_logo = Image.open(BytesIO(away_response.content)).resize((32,32),1)
-        self.canvas.SetImage(away_logo.convert("RGB"), 0, 0)
-        home_response = requests.get(game['home_logo'])
-        home_logo = Image.open(BytesIO(home_response.content)).resize((32,32),1)
-        self.canvas.SetImage(home_logo.convert("RGB"), 96, 0)
+        # create logos and cache them
+        self.away_logo = Image.open(BytesIO(requests.get(game['away_logo']).content)).resize((32,32),1).convert("RGB")
+        self.home_logo = Image.open(BytesIO(requests.get(game['home_logo']).content)).resize((32,32),1).convert("RGB")
+        self.canvas.SetImage(self.away_logo, 0, 0)
+        self.canvas.SetImage(self.home_logo, 96, 0)
         self.canvas = self.matrix.SwapOnVSync(self.canvas)
 
         self.current_display = game
@@ -276,13 +274,10 @@ class SportsDisplay:
         graphics.DrawText(self.canvas, font_large, 70 if int(update['home_score']) >= 100 else 75, 12, text_color, update['home_score'])
         graphics.DrawText(self.canvas, font_small, 61, 12, text_color, str(update.get('quarter', 'Q?')))
 
-        # create logos
-        away_response = requests.get(update['away_logo'])
-        away_logo = Image.open(BytesIO(away_response.content)).resize((32,32),1)
-        self.canvas.SetImage(away_logo.convert("RGB"), 0, 0)
-        home_response = requests.get(update['home_logo'])
-        home_logo = Image.open(BytesIO(home_response.content)).resize((32,32),1)
-        self.canvas.SetImage(home_logo.convert("RGB"), 96, 0)
+        # Use cached logos
+        if hasattr(self, 'away_logo') and hasattr(self, 'home_logo'):
+            self.canvas.SetImage(self.away_logo, 0, 0)
+            self.canvas.SetImage(self.home_logo, 96, 0)
         self.canvas = self.matrix.SwapOnVSync(self.canvas)
 
 
@@ -312,13 +307,11 @@ class SportsDisplay:
         graphics.DrawText(self.canvas, font_large, 70 if int(game['home_score']) >= 100 else 75, 12, text_color, game['home_score'])
         graphics.DrawText(self.canvas, font_small, 61, 12, text_color, str(game['period']))
 
-        # create logos
-        away_response = requests.get(game['away_logo'])
-        away_logo = Image.open(BytesIO(away_response.content)).resize((32,32),1)
-        self.canvas.SetImage(away_logo.convert("RGB"), 0, 0)
-        home_response = requests.get(game['home_logo'])
-        home_logo = Image.open(BytesIO(home_response.content)).resize((32,32),1)
-        self.canvas.SetImage(home_logo.convert("RGB"), 96, 0)
+        # create logos and cache them
+        self.away_logo = Image.open(BytesIO(requests.get(game['away_logo']).content)).resize((32,32),1).convert("RGB")
+        self.home_logo = Image.open(BytesIO(requests.get(game['home_logo']).content)).resize((32,32),1).convert("RGB")
+        self.canvas.SetImage(self.away_logo, 0, 0)
+        self.canvas.SetImage(self.home_logo, 96, 0)
         self.canvas = self.matrix.SwapOnVSync(self.canvas)
 
         self.current_display = game
@@ -334,10 +327,7 @@ class SportsDisplay:
 
         self.canvas.Clear()
 
-        # Redraw team names (assuming update has the game data, but since it's update, we need the original game)
-        # Wait, update is the updated game dict, so use update for everything.
-
-        # create team names
+        # Redraw team names (they don't change, but to be safe)
         away_rgb = tuple(int(update['away_color'][i:i+2], 16) for i in (0, 2, 4))
         away_color = graphics.Color(away_rgb[0], away_rgb[1], away_rgb[2])
         home_rgb = tuple(int(update['home_color'][i:i+2], 16) for i in (0, 2, 4))
@@ -353,13 +343,10 @@ class SportsDisplay:
         graphics.DrawText(self.canvas, font_large, 70 if int(update['home_score']) >= 100 else 75, 12, text_color, update['home_score'])
         graphics.DrawText(self.canvas, font_small, 61, 12, text_color, str(update['period']))
 
-        # create logos
-        away_response = requests.get(update['away_logo'])
-        away_logo = Image.open(BytesIO(away_response.content)).resize((32,32),1)
-        self.canvas.SetImage(away_logo.convert("RGB"), 0, 0)
-        home_response = requests.get(update['home_logo'])
-        home_logo = Image.open(BytesIO(home_response.content)).resize((32,32),1)
-        self.canvas.SetImage(home_logo.convert("RGB"), 96, 0)
+        # Use cached logos
+        if hasattr(self, 'away_logo') and hasattr(self, 'home_logo'):
+            self.canvas.SetImage(self.away_logo, 0, 0)
+            self.canvas.SetImage(self.home_logo, 96, 0)
         self.canvas = self.matrix.SwapOnVSync(self.canvas)
 
 

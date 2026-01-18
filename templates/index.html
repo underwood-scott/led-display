@@ -4,43 +4,185 @@
     <meta charset="UTF-8">
     <title>LED Display Control</title>
     <style>
-        body { font-family: sans-serif; background: #f8fafc; color: #222; }
-        .container { max-width: 500px; margin: 40px auto; background: #fff; border-radius: 8px; box-shadow: 0 2px 8px #0001; padding: 32px; }
-        h1 { text-align: center; }
-        form { margin-bottom: 24px; }
-        label { display: block; margin: 12px 0 4px; }
-        input[type=text], textarea { width: 100%; padding: 8px; border-radius: 4px; border: 1px solid #ccc; }
-        button { background: #2563eb; color: #fff; border: none; border-radius: 4px; padding: 10px 20px; font-size: 1rem; margin: 8px 0; cursor: pointer; }
-        button.stop { background: #ef4444; }
-        .status { margin: 16px 0; font-weight: bold; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: #333; margin: 0; padding: 0; min-height: 100vh; display: flex; align-items: center; justify-content: center; }
+        .container { max-width: 600px; background: #fff; border-radius: 12px; box-shadow: 0 8px 32px rgba(0,0,0,0.1); padding: 40px; }
+        h1 { text-align: center; color: #4a5568; margin-bottom: 32px; }
+        .mode-section { margin-bottom: 32px; }
+        .mode-section h2 { color: #2d3748; margin-bottom: 16px; }
+        .mode-options { display: flex; gap: 16px; justify-content: center; }
+        .mode-option { position: relative; }
+        .mode-option input[type="radio"] { display: none; }
+        .mode-option label { display: block; padding: 16px 24px; background: #e2e8f0; border-radius: 8px; cursor: pointer; transition: all 0.3s; text-align: center; font-weight: 500; }
+        .mode-option input[type="radio"]:checked + label { background: #4299e1; color: #fff; box-shadow: 0 4px 12px rgba(66, 153, 225, 0.4); }
+        .teams-section { margin-bottom: 32px; }
+        .teams-section h2 { color: #2d3748; margin-bottom: 16px; }
+        .sport-group { margin-bottom: 24px; border: 1px solid #e2e8f0; border-radius: 8px; padding: 16px; }
+        .sport-group h3 { margin: 0 0 12px 0; color: #4a5568; }
+        select[multiple] { width: 100%; height: 120px; padding: 8px; border: 1px solid #cbd5e0; border-radius: 4px; background: #fff; }
+        .actions { text-align: center; }
+        button { background: #48bb78; color: #fff; border: none; border-radius: 8px; padding: 12px 24px; font-size: 1rem; font-weight: 500; cursor: pointer; transition: background 0.3s; margin: 8px; }
+        button:hover { background: #38a169; }
+        button.stop { background: #f56565; }
+        button.stop:hover { background: #e53e3e; }
+        .status { margin-top: 24px; text-align: center; font-weight: bold; padding: 12px; border-radius: 4px; }
+        .status.active { background: #c6f6d5; color: #22543d; }
+        .status.inactive { background: #fed7d7; color: #742a2a; }
     </style>
 </head>
 <body>
 <div class="container">
     <h1>LED Display Control</h1>
-    <form method="POST" action="/set_teams">
-        <label for="nfl">NFL Teams (comma separated)</label>
-        <input type="text" id="nfl" name="nfl" value="{{ nfl_teams }}">
-        <label for="nba">NBA Teams (comma separated)</label>
-        <input type="text" id="nba" name="nba" value="{{ nba_teams }}">
-        <label for="mlb">MLB Teams (comma separated)</label>
-        <input type="text" id="mlb" name="mlb" value="{{ mlb_teams }}">
-        <label for="ncaafb">NCAAFB Teams (comma separated)</label>
-        <input type="text" id="ncaafb" name="ncaafb" value="{{ ncaafb_teams }}">
-        <label for="ncaabb">NCAABB Teams (comma separated)</label>
-        <input type="text" id="ncaabb" name="ncaabb" value="{{ ncaabb_teams }}">
-        <button type="submit">Set Teams</button>
-    </form>
-    <form method="POST" action="/start_sports_display">
-        <button type="submit">Start Sports Display</button>
-    </form>
-    <form method="POST" action="/start_metro_display">
-        <button type="submit">Start Metro Display</button>
-    </form>
-    <form method="POST" action="/stop_display">
-        <button type="submit" class="stop">Stop Display</button>
-    </form>
-    <div class="status">{{ status }}</div>
+    
+    <div class="mode-section">
+        <h2>Select Display Mode</h2>
+        <form method="POST" action="/set_mode" class="mode-options">
+            <div class="mode-option">
+                <input type="radio" id="sports" name="mode" value="sports" {% if mode == 'sports' %}checked{% endif %}>
+                <label for="sports">Sports</label>
+            </div>
+            <div class="mode-option">
+                <input type="radio" id="metro" name="mode" value="metro" {% if mode == 'metro' %}checked{% endif %}>
+                <label for="metro">Metro</label>
+            </div>
+            <div class="mode-option">
+                <input type="radio" id="off" name="mode" value="off" {% if mode == 'off' %}checked{% endif %}>
+                <label for="off">Off</label>
+            </div>
+            <button type="submit">Apply Mode</button>
+        </form>
+    </div>
+
+    <div class="teams-section">
+        <h2>Configure Teams</h2>
+        <form method="POST" action="/set_teams">
+            <div class="sport-group">
+                <h3>NFL</h3>
+                <select multiple name="nfl">
+                    <option value="Arizona Cardinals" {% if 'Arizona Cardinals' in nfl_teams %}selected{% endif %}>Arizona Cardinals</option>
+                    <option value="Atlanta Falcons" {% if 'Atlanta Falcons' in nfl_teams %}selected{% endif %}>Atlanta Falcons</option>
+                    <option value="Baltimore Ravens" {% if 'Baltimore Ravens' in nfl_teams %}selected{% endif %}>Baltimore Ravens</option>
+                    <option value="Buffalo Bills" {% if 'Buffalo Bills' in nfl_teams %}selected{% endif %}>Buffalo Bills</option>
+                    <option value="Carolina Panthers" {% if 'Carolina Panthers' in nfl_teams %}selected{% endif %}>Carolina Panthers</option>
+                    <option value="Chicago Bears" {% if 'Chicago Bears' in nfl_teams %}selected{% endif %}>Chicago Bears</option>
+                    <option value="Cincinnati Bengals" {% if 'Cincinnati Bengals' in nfl_teams %}selected{% endif %}>Cincinnati Bengals</option>
+                    <option value="Cleveland Browns" {% if 'Cleveland Browns' in nfl_teams %}selected{% endif %}>Cleveland Browns</option>
+                    <option value="Dallas Cowboys" {% if 'Dallas Cowboys' in nfl_teams %}selected{% endif %}>Dallas Cowboys</option>
+                    <option value="Denver Broncos" {% if 'Denver Broncos' in nfl_teams %}selected{% endif %}>Denver Broncos</option>
+                    <option value="Detroit Lions" {% if 'Detroit Lions' in nfl_teams %}selected{% endif %}>Detroit Lions</option>
+                    <option value="Green Bay Packers" {% if 'Green Bay Packers' in nfl_teams %}selected{% endif %}>Green Bay Packers</option>
+                    <option value="Houston Texans" {% if 'Houston Texans' in nfl_teams %}selected{% endif %}>Houston Texans</option>
+                    <option value="Indianapolis Colts" {% if 'Indianapolis Colts' in nfl_teams %}selected{% endif %}>Indianapolis Colts</option>
+                    <option value="Jacksonville Jaguars" {% if 'Jacksonville Jaguars' in nfl_teams %}selected{% endif %}>Jacksonville Jaguars</option>
+                    <option value="Kansas City Chiefs" {% if 'Kansas City Chiefs' in nfl_teams %}selected{% endif %}>Kansas City Chiefs</option>
+                    <option value="Las Vegas Raiders" {% if 'Las Vegas Raiders' in nfl_teams %}selected{% endif %}>Las Vegas Raiders</option>
+                    <option value="Los Angeles Chargers" {% if 'Los Angeles Chargers' in nfl_teams %}selected{% endif %}>Los Angeles Chargers</option>
+                    <option value="Los Angeles Rams" {% if 'Los Angeles Rams' in nfl_teams %}selected{% endif %}>Los Angeles Rams</option>
+                    <option value="Miami Dolphins" {% if 'Miami Dolphins' in nfl_teams %}selected{% endif %}>Miami Dolphins</option>
+                    <option value="Minnesota Vikings" {% if 'Minnesota Vikings' in nfl_teams %}selected{% endif %}>Minnesota Vikings</option>
+                    <option value="New England Patriots" {% if 'New England Patriots' in nfl_teams %}selected{% endif %}>New England Patriots</option>
+                    <option value="New Orleans Saints" {% if 'New Orleans Saints' in nfl_teams %}selected{% endif %}>New Orleans Saints</option>
+                    <option value="New York Giants" {% if 'New York Giants' in nfl_teams %}selected{% endif %}>New York Giants</option>
+                    <option value="New York Jets" {% if 'New York Jets' in nfl_teams %}selected{% endif %}>New York Jets</option>
+                    <option value="Philadelphia Eagles" {% if 'Philadelphia Eagles' in nfl_teams %}selected{% endif %}>Philadelphia Eagles</option>
+                    <option value="Pittsburgh Steelers" {% if 'Pittsburgh Steelers' in nfl_teams %}selected{% endif %}>Pittsburgh Steelers</option>
+                    <option value="San Francisco 49ers" {% if 'San Francisco 49ers' in nfl_teams %}selected{% endif %}>San Francisco 49ers</option>
+                    <option value="Seattle Seahawks" {% if 'Seattle Seahawks' in nfl_teams %}selected{% endif %}>Seattle Seahawks</option>
+                    <option value="Tampa Bay Buccaneers" {% if 'Tampa Bay Buccaneers' in nfl_teams %}selected{% endif %}>Tampa Bay Buccaneers</option>
+                    <option value="Tennessee Titans" {% if 'Tennessee Titans' in nfl_teams %}selected{% endif %}>Tennessee Titans</option>
+                    <option value="Washington Commanders" {% if 'Washington Commanders' in nfl_teams %}selected{% endif %}>Washington Commanders</option>
+                </select>
+            </div>
+            <div class="sport-group">
+                <h3>NBA</h3>
+                <select multiple name="nba">
+                    <option value="Atlanta Hawks" {% if 'Atlanta Hawks' in nba_teams %}selected{% endif %}>Atlanta Hawks</option>
+                    <option value="Boston Celtics" {% if 'Boston Celtics' in nba_teams %}selected{% endif %}>Boston Celtics</option>
+                    <option value="Brooklyn Nets" {% if 'Brooklyn Nets' in nba_teams %}selected{% endif %}>Brooklyn Nets</option>
+                    <option value="Charlotte Hornets" {% if 'Charlotte Hornets' in nba_teams %}selected{% endif %}>Charlotte Hornets</option>
+                    <option value="Chicago Bulls" {% if 'Chicago Bulls' in nba_teams %}selected{% endif %}>Chicago Bulls</option>
+                    <option value="Cleveland Cavaliers" {% if 'Cleveland Cavaliers' in nba_teams %}selected{% endif %}>Cleveland Cavaliers</option>
+                    <option value="Dallas Mavericks" {% if 'Dallas Mavericks' in nba_teams %}selected{% endif %}>Dallas Mavericks</option>
+                    <option value="Denver Nuggets" {% if 'Denver Nuggets' in nba_teams %}selected{% endif %}>Denver Nuggets</option>
+                    <option value="Detroit Pistons" {% if 'Detroit Pistons' in nba_teams %}selected{% endif %}>Detroit Pistons</option>
+                    <option value="Golden State Warriors" {% if 'Golden State Warriors' in nba_teams %}selected{% endif %}>Golden State Warriors</option>
+                    <option value="Houston Rockets" {% if 'Houston Rockets' in nba_teams %}selected{% endif %}>Houston Rockets</option>
+                    <option value="Indiana Pacers" {% if 'Indiana Pacers' in nba_teams %}selected{% endif %}>Indiana Pacers</option>
+                    <option value="LA Clippers" {% if 'LA Clippers' in nba_teams %}selected{% endif %}>LA Clippers</option>
+                    <option value="Los Angeles Lakers" {% if 'Los Angeles Lakers' in nba_teams %}selected{% endif %}>Los Angeles Lakers</option>
+                    <option value="Memphis Grizzlies" {% if 'Memphis Grizzlies' in nba_teams %}selected{% endif %}>Memphis Grizzlies</option>
+                    <option value="Miami Heat" {% if 'Miami Heat' in nba_teams %}selected{% endif %}>Miami Heat</option>
+                    <option value="Milwaukee Bucks" {% if 'Milwaukee Bucks' in nba_teams %}selected{% endif %}>Milwaukee Bucks</option>
+                    <option value="Minnesota Timberwolves" {% if 'Minnesota Timberwolves' in nba_teams %}selected{% endif %}>Minnesota Timberwolves</option>
+                    <option value="New Orleans Pelicans" {% if 'New Orleans Pelicans' in nba_teams %}selected{% endif %}>New Orleans Pelicans</option>
+                    <option value="New York Knicks" {% if 'New York Knicks' in nba_teams %}selected{% endif %}>New York Knicks</option>
+                    <option value="Oklahoma City Thunder" {% if 'Oklahoma City Thunder' in nba_teams %}selected{% endif %}>Oklahoma City Thunder</option>
+                    <option value="Orlando Magic" {% if 'Orlando Magic' in nba_teams %}selected{% endif %}>Orlando Magic</option>
+                    <option value="Philadelphia 76ers" {% if 'Philadelphia 76ers' in nba_teams %}selected{% endif %}>Philadelphia 76ers</option>
+                    <option value="Phoenix Suns" {% if 'Phoenix Suns' in nba_teams %}selected{% endif %}>Phoenix Suns</option>
+                    <option value="Portland Trail Blazers" {% if 'Portland Trail Blazers' in nba_teams %}selected{% endif %}>Portland Trail Blazers</option>
+                    <option value="Sacramento Kings" {% if 'Sacramento Kings' in nba_teams %}selected{% endif %}>Sacramento Kings</option>
+                    <option value="San Antonio Spurs" {% if 'San Antonio Spurs' in nba_teams %}selected{% endif %}>San Antonio Spurs</option>
+                    <option value="Toronto Raptors" {% if 'Toronto Raptors' in nba_teams %}selected{% endif %}>Toronto Raptors</option>
+                    <option value="Utah Jazz" {% if 'Utah Jazz' in nba_teams %}selected{% endif %}>Utah Jazz</option>
+                    <option value="Washington Wizards" {% if 'Washington Wizards' in nba_teams %}selected{% endif %}>Washington Wizards</option>
+                </select>
+            </div>
+            <div class="sport-group">
+                <h3>MLB</h3>
+                <select multiple name="mlb">
+                    <option value="Arizona Diamondbacks" {% if 'Arizona Diamondbacks' in mlb_teams %}selected{% endif %}>Arizona Diamondbacks</option>
+                    <option value="Atlanta Braves" {% if 'Atlanta Braves' in mlb_teams %}selected{% endif %}>Atlanta Braves</option>
+                    <option value="Baltimore Orioles" {% if 'Baltimore Orioles' in mlb_teams %}selected{% endif %}>Baltimore Orioles</option>
+                    <option value="Boston Red Sox" {% if 'Boston Red Sox' in mlb_teams %}selected{% endif %}>Boston Red Sox</option>
+                    <option value="Chicago Cubs" {% if 'Chicago Cubs' in mlb_teams %}selected{% endif %}>Chicago Cubs</option>
+                    <option value="Chicago White Sox" {% if 'Chicago White Sox' in mlb_teams %}selected{% endif %}>Chicago White Sox</option>
+                    <option value="Cincinnati Reds" {% if 'Cincinnati Reds' in mlb_teams %}selected{% endif %}>Cincinnati Reds</option>
+                    <option value="Cleveland Guardians" {% if 'Cleveland Guardians' in mlb_teams %}selected{% endif %}>Cleveland Guardians</option>
+                    <option value="Colorado Rockies" {% if 'Colorado Rockies' in mlb_teams %}selected{% endif %}>Colorado Rockies</option>
+                    <option value="Detroit Tigers" {% if 'Detroit Tigers' in mlb_teams %}selected{% endif %}>Detroit Tigers</option>
+                    <option value="Houston Astros" {% if 'Houston Astros' in mlb_teams %}selected{% endif %}>Houston Astros</option>
+                    <option value="Kansas City Royals" {% if 'Kansas City Royals' in mlb_teams %}selected{% endif %}>Kansas City Royals</option>
+                    <option value="Los Angeles Angels" {% if 'Los Angeles Angels' in mlb_teams %}selected{% endif %}>Los Angeles Angels</option>
+                    <option value="Los Angeles Dodgers" {% if 'Los Angeles Dodgers' in mlb_teams %}selected{% endif %}>Los Angeles Dodgers</option>
+                    <option value="Miami Marlins" {% if 'Miami Marlins' in mlb_teams %}selected{% endif %}>Miami Marlins</option>
+                    <option value="Milwaukee Brewers" {% if 'Milwaukee Brewers' in mlb_teams %}selected{% endif %}>Milwaukee Brewers</option>
+                    <option value="Minnesota Twins" {% if 'Minnesota Twins' in mlb_teams %}selected{% endif %}>Minnesota Twins</option>
+                    <option value="New York Mets" {% if 'New York Mets' in mlb_teams %}selected{% endif %}>New York Mets</option>
+                    <option value="New York Yankees" {% if 'New York Yankees' in mlb_teams %}selected{% endif %}>New York Yankees</option>
+                    <option value="Oakland Athletics" {% if 'Oakland Athletics' in mlb_teams %}selected{% endif %}>Oakland Athletics</option>
+                    <option value="Philadelphia Phillies" {% if 'Philadelphia Phillies' in mlb_teams %}selected{% endif %}>Philadelphia Phillies</option>
+                    <option value="Pittsburgh Pirates" {% if 'Pittsburgh Pirates' in mlb_teams %}selected{% endif %}>Pittsburgh Pirates</option>
+                    <option value="San Diego Padres" {% if 'San Diego Padres' in mlb_teams %}selected{% endif %}>San Diego Padres</option>
+                    <option value="San Francisco Giants" {% if 'San Francisco Giants' in mlb_teams %}selected{% endif %}>San Francisco Giants</option>
+                    <option value="Seattle Mariners" {% if 'Seattle Mariners' in mlb_teams %}selected{% endif %}>Seattle Mariners</option>
+                    <option value="St. Louis Cardinals" {% if 'St. Louis Cardinals' in mlb_teams %}selected{% endif %}>St. Louis Cardinals</option>
+                    <option value="Tampa Bay Rays" {% if 'Tampa Bay Rays' in mlb_teams %}selected{% endif %}>Tampa Bay Rays</option>
+                    <option value="Texas Rangers" {% if 'Texas Rangers' in mlb_teams %}selected{% endif %}>Texas Rangers</option>
+                    <option value="Toronto Blue Jays" {% if 'Toronto Blue Jays' in mlb_teams %}selected{% endif %}>Toronto Blue Jays</option>
+                    <option value="Washington Nationals" {% if 'Washington Nationals' in mlb_teams %}selected{% endif %}>Washington Nationals</option>
+                </select>
+            </div>
+            <div class="sport-group">
+                <h3>NCAA Football</h3>
+                <select multiple name="ncaafb">
+                    <option value="Wisconsin Badgers" {% if 'Wisconsin Badgers' in ncaafb_teams %}selected{% endif %}>Wisconsin Badgers</option>
+                    <!-- Add more NCAA FB teams as needed -->
+                </select>
+            </div>
+            <div class="sport-group">
+                <h3>NCAA Basketball</h3>
+                <select multiple name="ncaabb">
+                    <option value="Wisconsin Badgers" {% if 'Wisconsin Badgers' in ncaabb_teams %}selected{% endif %}>Wisconsin Badgers</option>
+                    <!-- Add more NCAA BB teams as needed -->
+                </select>
+            </div>
+            <div class="actions">
+                <button type="submit">Update Teams</button>
+            </div>
+        </form>
+    </div>
+
+    <div class="status {% if status == 'Display running' %}active{% else %}inactive{% endif %}">{{ status }}</div>
 </div>
 </body>
 </html>

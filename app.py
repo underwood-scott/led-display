@@ -46,26 +46,43 @@ def index():
             current_type = f.read().strip()
     else:
         current_type = "None"
-    status = f"Current: {current_type}"
+    
+    if current_type == "Sports Display":
+        mode = "sports"
+    elif current_type == "Metro Display":
+        mode = "metro"
+    else:
+        mode = "off"
+    
+    status = f"Display: {current_type}"
     return render_template(
         "index.html",
-        nfl_teams=", ".join(teams_data['nfl']),
-        nba_teams=", ".join(teams_data['nba']),
-        mlb_teams=", ".join(teams_data['mlb']),
-        ncaafb_teams=", ".join(teams_data['ncaafb']),
-        ncaabb_teams=", ".join(teams_data['ncaabb']),
+        nfl_teams=teams_data['nfl'],
+        nba_teams=teams_data['nba'],
+        mlb_teams=teams_data['mlb'],
+        ncaafb_teams=teams_data['ncaafb'],
+        ncaabb_teams=teams_data['ncaabb'],
+        mode=mode,
         status=status
     )
 
 
-@app.route("/set_teams", methods=["POST"])
-def set_teams():
+@app.route("/set_mode", methods=["POST"])
+def set_mode():
+    mode = request.form.get("mode")
+    if mode == "sports":
+        return start_sports_display()
+    elif mode == "metro":
+        return start_metro_display()
+    elif mode == "off":
+        return stop_display()
+    return redirect(url_for("index"))
     teams_data = {
-        'nfl': [t.strip() for t in request.form.get("nfl", "").split(",") if t.strip()],
-        'nba': [t.strip() for t in request.form.get("nba", "").split(",") if t.strip()],
-        'mlb': [t.strip() for t in request.form.get("mlb", "").split(",") if t.strip()],
-        'ncaafb': [t.strip() for t in request.form.get("ncaafb", "").split(",") if t.strip()],
-        'ncaabb': [t.strip() for t in request.form.get("ncaabb", "").split(",") if t.strip()]
+        'nfl': request.form.getlist("nfl"),
+        'nba': request.form.getlist("nba"),
+        'mlb': request.form.getlist("mlb"),
+        'ncaafb': request.form.getlist("ncaafb"),
+        'ncaabb': request.form.getlist("ncaabb")
     }
     with open(TEAMS_FILE, 'w') as f:
         json.dump(teams_data, f)

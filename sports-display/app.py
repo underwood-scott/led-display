@@ -14,7 +14,7 @@ NBA_TEAMS = ['Milwaukee Bucks', 'Los Angeles Lakers', 'Orlando Magic']
 NCAAFB_TEAMS = ['Wisconsin Badgers']
 NCAABB_TEAMS = ['Wisconsin Badgers', 'Marquette Golden Eagles']
 MLB_TEAMS = ['Milwaukee Brewers', 'Chicago Cubs']
-FONT_PATH = '/home/scott.underwood/Documents/sports-sign/rpi-rgb-led-matrix/fonts/'
+FONT_PATH = '/home/scott.underwood/led-display/rpi-rgb-led-matrix/fonts/'
 
 app = Flask(__name__)
 

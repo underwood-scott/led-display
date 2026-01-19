@@ -165,15 +165,141 @@
             <div class="sport-group">
                 <h3>NCAA Football</h3>
                 <select multiple name="ncaafb">
+                    <!-- ACC -->
+                    <option value="Army Black Knights" {% if 'Army Black Knights' in ncaafb_teams %}selected{% endif %}>Army Black Knights</option>
+                    <option value="Boston College Eagles" {% if 'Boston College Eagles' in ncaafb_teams %}selected{% endif %}>Boston College Eagles</option>
+                    <option value="California Golden Bears" {% if 'California Golden Bears' in ncaafb_teams %}selected{% endif %}>California Golden Bears</option>
+                    <option value="Clemson Tigers" {% if 'Clemson Tigers' in ncaafb_teams %}selected{% endif %}>Clemson Tigers</option>
+                    <option value="Duke Blue Devils" {% if 'Duke Blue Devils' in ncaafb_teams %}selected{% endif %}>Duke Blue Devils</option>
+                    <option value="Florida State Seminoles" {% if 'Florida State Seminoles' in ncaafb_teams %}selected{% endif %}>Florida State Seminoles</option>
+                    <option value="Georgia Tech Yellow Jackets" {% if 'Georgia Tech Yellow Jackets' in ncaafb_teams %}selected{% endif %}>Georgia Tech Yellow Jackets</option>
+                    <option value="Louisville Cardinals" {% if 'Louisville Cardinals' in ncaafb_teams %}selected{% endif %}>Louisville Cardinals</option>
+                    <option value="Miami Hurricanes" {% if 'Miami Hurricanes' in ncaafb_teams %}selected{% endif %}>Miami Hurricanes</option>
+                    <option value="North Carolina Tar Heels" {% if 'North Carolina Tar Heels' in ncaafb_teams %}selected{% endif %}>North Carolina Tar Heels</option>
+                    <option value="North Carolina State Wolfpack" {% if 'North Carolina State Wolfpack' in ncaafb_teams %}selected{% endif %}>North Carolina State Wolfpack</option>
+                    <option value="Notre Dame Fighting Irish" {% if 'Notre Dame Fighting Irish' in ncaafb_teams %}selected{% endif %}>Notre Dame Fighting Irish</option>
+                    <option value="Pittsburgh Panthers" {% if 'Pittsburgh Panthers' in ncaafb_teams %}selected{% endif %}>Pittsburgh Panthers</option>
+                    <option value="Syracuse Orange" {% if 'Syracuse Orange' in ncaafb_teams %}selected{% endif %}>Syracuse Orange</option>
+                    <option value="Virginia Cavaliers" {% if 'Virginia Cavaliers' in ncaafb_teams %}selected{% endif %}>Virginia Cavaliers</option>
+                    <option value="Virginia Tech Hokies" {% if 'Virginia Tech Hokies' in ncaafb_teams %}selected{% endif %}>Virginia Tech Hokies</option>
+                    <option value="Wake Forest Demon Deacons" {% if 'Wake Forest Demon Deacons' in ncaafb_teams %}selected{% endif %}>Wake Forest Demon Deacons</option>
+                    <!-- Big Ten -->
+                    <option value="Illinois Fighting Illini" {% if 'Illinois Fighting Illini' in ncaafb_teams %}selected{% endif %}>Illinois Fighting Illini</option>
+                    <option value="Indiana Hoosiers" {% if 'Indiana Hoosiers' in ncaafb_teams %}selected{% endif %}>Indiana Hoosiers</option>
+                    <option value="Iowa Hawkeyes" {% if 'Iowa Hawkeyes' in ncaafb_teams %}selected{% endif %}>Iowa Hawkeyes</option>
+                    <option value="Maryland Terrapins" {% if 'Maryland Terrapins' in ncaafb_teams %}selected{% endif %}>Maryland Terrapins</option>
+                    <option value="Michigan Wolverines" {% if 'Michigan Wolverines' in ncaafb_teams %}selected{% endif %}>Michigan Wolverines</option>
+                    <option value="Michigan State Spartans" {% if 'Michigan State Spartans' in ncaafb_teams %}selected{% endif %}>Michigan State Spartans</option>
+                    <option value="Minnesota Golden Gophers" {% if 'Minnesota Golden Gophers' in ncaafb_teams %}selected{% endif %}>Minnesota Golden Gophers</option>
+                    <option value="Nebraska Cornhuskers" {% if 'Nebraska Cornhuskers' in ncaafb_teams %}selected{% endif %}>Nebraska Cornhuskers</option>
+                    <option value="Northwestern Wildcats" {% if 'Northwestern Wildcats' in ncaafb_teams %}selected{% endif %}>Northwestern Wildcats</option>
+                    <option value="Ohio State Buckeyes" {% if 'Ohio State Buckeyes' in ncaafb_teams %}selected{% endif %}>Ohio State Buckeyes</option>
+                    <option value="Penn State Nittany Lions" {% if 'Penn State Nittany Lions' in ncaafb_teams %}selected{% endif %}>Penn State Nittany Lions</option>
+                    <option value="Purdue Boilermakers" {% if 'Purdue Boilermakers' in ncaafb_teams %}selected{% endif %}>Purdue Boilermakers</option>
+                    <option value="Rutgers Scarlet Knights" {% if 'Rutgers Scarlet Knights' in ncaafb_teams %}selected{% endif %}>Rutgers Scarlet Knights</option>
                     <option value="Wisconsin Badgers" {% if 'Wisconsin Badgers' in ncaafb_teams %}selected{% endif %}>Wisconsin Badgers</option>
-                    <!-- Add more NCAA FB teams as needed -->
+                    <!-- Big 12 -->
+                    <option value="Arizona Wildcats" {% if 'Arizona Wildcats' in ncaafb_teams %}selected{% endif %}>Arizona Wildcats</option>
+                    <option value="Arizona State Sun Devils" {% if 'Arizona State Sun Devils' in ncaafb_teams %}selected{% endif %}>Arizona State Sun Devils</option>
+                    <option value="Baylor Bears" {% if 'Baylor Bears' in ncaafb_teams %}selected{% endif %}>Baylor Bears</option>
+                    <option value="BYU Cougars" {% if 'BYU Cougars' in ncaafb_teams %}selected{% endif %}>BYU Cougars</option>
+                    <option value="Cincinnati Bearcats" {% if 'Cincinnati Bearcats' in ncaafb_teams %}selected{% endif %}>Cincinnati Bearcats</option>
+                    <option value="Colorado Buffaloes" {% if 'Colorado Buffaloes' in ncaafb_teams %}selected{% endif %}>Colorado Buffaloes</option>
+                    <option value="Houston Cougars" {% if 'Houston Cougars' in ncaafb_teams %}selected{% endif %}>Houston Cougars</option>
+                    <option value="Iowa State Cyclones" {% if 'Iowa State Cyclones' in ncaafb_teams %}selected{% endif %}>Iowa State Cyclones</option>
+                    <option value="Kansas Jayhawks" {% if 'Kansas Jayhawks' in ncaafb_teams %}selected{% endif %}>Kansas Jayhawks</option>
+                    <option value="Kansas State Wildcats" {% if 'Kansas State Wildcats' in ncaafb_teams %}selected{% endif %}>Kansas State Wildcats</option>
+                    <option value="Oklahoma State Cowboys" {% if 'Oklahoma State Cowboys' in ncaafb_teams %}selected{% endif %}>Oklahoma State Cowboys</option>
+                    <option value="TCU Horned Frogs" {% if 'TCU Horned Frogs' in ncaafb_teams %}selected{% endif %}>TCU Horned Frogs</option>
+                    <option value="Texas Tech Red Raiders" {% if 'Texas Tech Red Raiders' in ncaafb_teams %}selected{% endif %}>Texas Tech Red Raiders</option>
+                    <option value="UCF Knights" {% if 'UCF Knights' in ncaafb_teams %}selected{% endif %}>UCF Knights</option>
+                    <option value="Utah Utes" {% if 'Utah Utes' in ncaafb_teams %}selected{% endif %}>Utah Utes</option>
+                    <option value="West Virginia Mountaineers" {% if 'West Virginia Mountaineers' in ncaafb_teams %}selected{% endif %}>West Virginia Mountaineers</option>
+                    <!-- SEC -->
+                    <option value="Alabama Crimson Tide" {% if 'Alabama Crimson Tide' in ncaafb_teams %}selected{% endif %}>Alabama Crimson Tide</option>
+                    <option value="Arkansas Razorbacks" {% if 'Arkansas Razorbacks' in ncaafb_teams %}selected{% endif %}>Arkansas Razorbacks</option>
+                    <option value="Auburn Tigers" {% if 'Auburn Tigers' in ncaafb_teams %}selected{% endif %}>Auburn Tigers</option>
+                    <option value="Florida Gators" {% if 'Florida Gators' in ncaafb_teams %}selected{% endif %}>Florida Gators</option>
+                    <option value="Georgia Bulldogs" {% if 'Georgia Bulldogs' in ncaafb_teams %}selected{% endif %}>Georgia Bulldogs</option>
+                    <option value="Kentucky Wildcats" {% if 'Kentucky Wildcats' in ncaafb_teams %}selected{% endif %}>Kentucky Wildcats</option>
+                    <option value="LSU Tigers" {% if 'LSU Tigers' in ncaafb_teams %}selected{% endif %}>LSU Tigers</option>
+                    <option value="Mississippi State Bulldogs" {% if 'Mississippi State Bulldogs' in ncaafb_teams %}selected{% endif %}>Mississippi State Bulldogs</option>
+                    <option value="Missouri Tigers" {% if 'Missouri Tigers' in ncaafb_teams %}selected{% endif %}>Missouri Tigers</option>
+                    <option value="Oklahoma Sooners" {% if 'Oklahoma Sooners' in ncaafb_teams %}selected{% endif %}>Oklahoma Sooners</option>
+                    <option value="South Carolina Gamecocks" {% if 'South Carolina Gamecocks' in ncaafb_teams %}selected{% endif %}>South Carolina Gamecocks</option>
+                    <option value="Tennessee Volunteers" {% if 'Tennessee Volunteers' in ncaafb_teams %}selected{% endif %}>Tennessee Volunteers</option>
+                    <option value="Texas A&M Aggies" {% if 'Texas A&M Aggies' in ncaafb_teams %}selected{% endif %}>Texas A&M Aggies</option>
+                    <option value="Vanderbilt Commodores" {% if 'Vanderbilt Commodores' in ncaafb_teams %}selected{% endif %}>Vanderbilt Commodores</option>
                 </select>
             </div>
             <div class="sport-group">
                 <h3>NCAA Basketball</h3>
                 <select multiple name="ncaabb">
+                    <!-- ACC -->
+                    <option value="Army Black Knights" {% if 'Army Black Knights' in ncaabb_teams %}selected{% endif %}>Army Black Knights</option>
+                    <option value="Boston College Eagles" {% if 'Boston College Eagles' in ncaabb_teams %}selected{% endif %}>Boston College Eagles</option>
+                    <option value="California Golden Bears" {% if 'California Golden Bears' in ncaabb_teams %}selected{% endif %}>California Golden Bears</option>
+                    <option value="Clemson Tigers" {% if 'Clemson Tigers' in ncaabb_teams %}selected{% endif %}>Clemson Tigers</option>
+                    <option value="Duke Blue Devils" {% if 'Duke Blue Devils' in ncaabb_teams %}selected{% endif %}>Duke Blue Devils</option>
+                    <option value="Florida State Seminoles" {% if 'Florida State Seminoles' in ncaabb_teams %}selected{% endif %}>Florida State Seminoles</option>
+                    <option value="Georgia Tech Yellow Jackets" {% if 'Georgia Tech Yellow Jackets' in ncaabb_teams %}selected{% endif %}>Georgia Tech Yellow Jackets</option>
+                    <option value="Louisville Cardinals" {% if 'Louisville Cardinals' in ncaabb_teams %}selected{% endif %}>Louisville Cardinals</option>
+                    <option value="Miami Hurricanes" {% if 'Miami Hurricanes' in ncaabb_teams %}selected{% endif %}>Miami Hurricanes</option>
+                    <option value="North Carolina Tar Heels" {% if 'North Carolina Tar Heels' in ncaabb_teams %}selected{% endif %}>North Carolina Tar Heels</option>
+                    <option value="North Carolina State Wolfpack" {% if 'North Carolina State Wolfpack' in ncaabb_teams %}selected{% endif %}>North Carolina State Wolfpack</option>
+                    <option value="Notre Dame Fighting Irish" {% if 'Notre Dame Fighting Irish' in ncaabb_teams %}selected{% endif %}>Notre Dame Fighting Irish</option>
+                    <option value="Pittsburgh Panthers" {% if 'Pittsburgh Panthers' in ncaabb_teams %}selected{% endif %}>Pittsburgh Panthers</option>
+                    <option value="Syracuse Orange" {% if 'Syracuse Orange' in ncaabb_teams %}selected{% endif %}>Syracuse Orange</option>
+                    <option value="Virginia Cavaliers" {% if 'Virginia Cavaliers' in ncaabb_teams %}selected{% endif %}>Virginia Cavaliers</option>
+                    <option value="Virginia Tech Hokies" {% if 'Virginia Tech Hokies' in ncaabb_teams %}selected{% endif %}>Virginia Tech Hokies</option>
+                    <option value="Wake Forest Demon Deacons" {% if 'Wake Forest Demon Deacons' in ncaabb_teams %}selected{% endif %}>Wake Forest Demon Deacons</option>
+                    <!-- Big Ten -->
+                    <option value="Illinois Fighting Illini" {% if 'Illinois Fighting Illini' in ncaabb_teams %}selected{% endif %}>Illinois Fighting Illini</option>
+                    <option value="Indiana Hoosiers" {% if 'Indiana Hoosiers' in ncaabb_teams %}selected{% endif %}>Indiana Hoosiers</option>
+                    <option value="Iowa Hawkeyes" {% if 'Iowa Hawkeyes' in ncaabb_teams %}selected{% endif %}>Iowa Hawkeyes</option>
+                    <option value="Maryland Terrapins" {% if 'Maryland Terrapins' in ncaabb_teams %}selected{% endif %}>Maryland Terrapins</option>
+                    <option value="Michigan Wolverines" {% if 'Michigan Wolverines' in ncaabb_teams %}selected{% endif %}>Michigan Wolverines</option>
+                    <option value="Michigan State Spartans" {% if 'Michigan State Spartans' in ncaabb_teams %}selected{% endif %}>Michigan State Spartans</option>
+                    <option value="Minnesota Golden Gophers" {% if 'Minnesota Golden Gophers' in ncaabb_teams %}selected{% endif %}>Minnesota Golden Gophers</option>
+                    <option value="Nebraska Cornhuskers" {% if 'Nebraska Cornhuskers' in ncaabb_teams %}selected{% endif %}>Nebraska Cornhuskers</option>
+                    <option value="Northwestern Wildcats" {% if 'Northwestern Wildcats' in ncaabb_teams %}selected{% endif %}>Northwestern Wildcats</option>
+                    <option value="Ohio State Buckeyes" {% if 'Ohio State Buckeyes' in ncaabb_teams %}selected{% endif %}>Ohio State Buckeyes</option>
+                    <option value="Penn State Nittany Lions" {% if 'Penn State Nittany Lions' in ncaabb_teams %}selected{% endif %}>Penn State Nittany Lions</option>
+                    <option value="Purdue Boilermakers" {% if 'Purdue Boilermakers' in ncaabb_teams %}selected{% endif %}>Purdue Boilermakers</option>
+                    <option value="Rutgers Scarlet Knights" {% if 'Rutgers Scarlet Knights' in ncaabb_teams %}selected{% endif %}>Rutgers Scarlet Knights</option>
                     <option value="Wisconsin Badgers" {% if 'Wisconsin Badgers' in ncaabb_teams %}selected{% endif %}>Wisconsin Badgers</option>
-                    <!-- Add more NCAA BB teams as needed -->
+                    <!-- Big 12 -->
+                    <option value="Arizona Wildcats" {% if 'Arizona Wildcats' in ncaabb_teams %}selected{% endif %}>Arizona Wildcats</option>
+                    <option value="Arizona State Sun Devils" {% if 'Arizona State Sun Devils' in ncaabb_teams %}selected{% endif %}>Arizona State Sun Devils</option>
+                    <option value="Baylor Bears" {% if 'Baylor Bears' in ncaabb_teams %}selected{% endif %}>Baylor Bears</option>
+                    <option value="BYU Cougars" {% if 'BYU Cougars' in ncaabb_teams %}selected{% endif %}>BYU Cougars</option>
+                    <option value="Cincinnati Bearcats" {% if 'Cincinnati Bearcats' in ncaabb_teams %}selected{% endif %}>Cincinnati Bearcats</option>
+                    <option value="Colorado Buffaloes" {% if 'Colorado Buffaloes' in ncaabb_teams %}selected{% endif %}>Colorado Buffaloes</option>
+                    <option value="Houston Cougars" {% if 'Houston Cougars' in ncaabb_teams %}selected{% endif %}>Houston Cougars</option>
+                    <option value="Iowa State Cyclones" {% if 'Iowa State Cyclones' in ncaabb_teams %}selected{% endif %}>Iowa State Cyclones</option>
+                    <option value="Kansas Jayhawks" {% if 'Kansas Jayhawks' in ncaabb_teams %}selected{% endif %}>Kansas Jayhawks</option>
+                    <option value="Kansas State Wildcats" {% if 'Kansas State Wildcats' in ncaabb_teams %}selected{% endif %}>Kansas State Wildcats</option>
+                    <option value="Oklahoma State Cowboys" {% if 'Oklahoma State Cowboys' in ncaabb_teams %}selected{% endif %}>Oklahoma State Cowboys</option>
+                    <option value="TCU Horned Frogs" {% if 'TCU Horned Frogs' in ncaabb_teams %}selected{% endif %}>TCU Horned Frogs</option>
+                    <option value="Texas Tech Red Raiders" {% if 'Texas Tech Red Raiders' in ncaabb_teams %}selected{% endif %}>Texas Tech Red Raiders</option>
+                    <option value="UCF Knights" {% if 'UCF Knights' in ncaabb_teams %}selected{% endif %}>UCF Knights</option>
+                    <option value="Utah Utes" {% if 'Utah Utes' in ncaabb_teams %}selected{% endif %}>Utah Utes</option>
+                    <option value="West Virginia Mountaineers" {% if 'West Virginia Mountaineers' in ncaabb_teams %}selected{% endif %}>West Virginia Mountaineers</option>
+                    <!-- SEC -->
+                    <option value="Alabama Crimson Tide" {% if 'Alabama Crimson Tide' in ncaabb_teams %}selected{% endif %}>Alabama Crimson Tide</option>
+                    <option value="Arkansas Razorbacks" {% if 'Arkansas Razorbacks' in ncaabb_teams %}selected{% endif %}>Arkansas Razorbacks</option>
+                    <option value="Auburn Tigers" {% if 'Auburn Tigers' in ncaabb_teams %}selected{% endif %}>Auburn Tigers</option>
+                    <option value="Florida Gators" {% if 'Florida Gators' in ncaabb_teams %}selected{% endif %}>Florida Gators</option>
+                    <option value="Georgia Bulldogs" {% if 'Georgia Bulldogs' in ncaabb_teams %}selected{% endif %}>Georgia Bulldogs</option>
+                    <option value="Kentucky Wildcats" {% if 'Kentucky Wildcats' in ncaabb_teams %}selected{% endif %}>Kentucky Wildcats</option>
+                    <option value="LSU Tigers" {% if 'LSU Tigers' in ncaabb_teams %}selected{% endif %}>LSU Tigers</option>
+                    <option value="Mississippi State Bulldogs" {% if 'Mississippi State Bulldogs' in ncaabb_teams %}selected{% endif %}>Mississippi State Bulldogs</option>
+                    <option value="Missouri Tigers" {% if 'Missouri Tigers' in ncaabb_teams %}selected{% endif %}>Missouri Tigers</option>
+                    <option value="Oklahoma Sooners" {% if 'Oklahoma Sooners' in ncaabb_teams %}selected{% endif %}>Oklahoma Sooners</option>
+                    <option value="South Carolina Gamecocks" {% if 'South Carolina Gamecocks' in ncaabb_teams %}selected{% endif %}>South Carolina Gamecocks</option>
+                    <option value="Tennessee Volunteers" {% if 'Tennessee Volunteers' in ncaabb_teams %}selected{% endif %}>Tennessee Volunteers</option>
+                    <option value="Texas A&M Aggies" {% if 'Texas A&M Aggies' in ncaabb_teams %}selected{% endif %}>Texas A&M Aggies</option>
+                    <option value="Vanderbilt Commodores" {% if 'Vanderbilt Commodores' in ncaabb_teams %}selected{% endif %}>Vanderbilt Commodores</option>
                 </select>
             </div>
             <div class="actions">

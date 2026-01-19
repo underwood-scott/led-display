@@ -77,6 +77,10 @@ def set_mode():
     elif mode == "off":
         return stop_display()
     return redirect(url_for("index"))
+
+
+@app.route("/set_teams", methods=["POST"])
+def set_teams():
     teams_data = {
         'nfl': request.form.getlist("nfl"),
         'nba': request.form.getlist("nba"),
@@ -86,6 +90,18 @@ def set_mode():
     }
     with open(TEAMS_FILE, 'w') as f:
         json.dump(teams_data, f)
+    
+    # If display is running, restart it to pick up new teams
+    if os.path.exists(TYPE_FILE):
+        with open(TYPE_FILE, 'r') as f:
+            current_type = f.read().strip()
+        if current_type == "Sports Display":
+            stop_display_process()
+            start_sports_display()
+        elif current_type == "Metro Display":
+            stop_display_process()
+            start_metro_display()
+    
     return redirect(url_for("index"))
 
 
